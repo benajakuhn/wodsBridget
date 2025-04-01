@@ -1,5 +1,30 @@
 public class Main {
+    public static final int[][][] GAME_BOARD = new int[8][8][3];
+
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        System.out.println(toAsciiString());
     }
+
+    public static String toAsciiString() {
+        StringBuilder sb = new StringBuilder();
+        for (int z = 2; z >= 0; z--) { // from top layer to bottom
+            sb.append("Level ").append(z).append(":\n");
+            for (int y = 0; y < 8; y++) {
+                for (int x = 0; x < 8; x++) {
+                    int value = GAME_BOARD[x][y][z];
+                    char c;
+                    switch (value) {
+                    case 1: c = 'X'; break; // your block
+                    case 2: c = 'O'; break; // opponent's block
+                    default: c = '.';       // empty
+                    }
+                    sb.append(c).append(' ');
+                }
+                sb.append('\n');
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
+
 }
