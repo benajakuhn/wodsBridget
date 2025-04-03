@@ -1,14 +1,23 @@
 public class Main {
     public static final int[][][] GAME_BOARD = new int[8][8][3];
-    static TBlock block = new TBlock();
+    public static int[][] tBlockShape = new int[][] {
+        {0, 0, 0},
+        {-1, 0, 0},
+        {1, 0, 0},
+        {0, 1, 0}
+    };
 
     public static void main(String[] args) {
-        for (int i = 0; i < 4; i++) {
-            block.place(3, 3);
-            block.rotate();
-            System.out.println(toAsciiString());
-            clearGameBoard();
-        }
+//        for (int i = 0; i < 4; i++) {
+//            block.place(3, 3);
+//            block.rotate();
+//            System.out.println(toAsciiString());
+//            clearGameBoard();
+//        }
+
+
+
+        BlockRotator3D.placeAllRotations(tBlockShape, 3, 3, 0);
     }
 
     public static void clearGameBoard() {
