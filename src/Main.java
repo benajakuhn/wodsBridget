@@ -1,8 +1,24 @@
 public class Main {
     public static final int[][][] GAME_BOARD = new int[8][8][3];
+    static TBlock block = new TBlock();
 
     public static void main(String[] args) {
-        System.out.println(toAsciiString());
+        for (int i = 0; i < 4; i++) {
+            block.place(3, 3);
+            block.rotate();
+            System.out.println(toAsciiString());
+            clearGameBoard();
+        }
+    }
+
+    public static void clearGameBoard() {
+        for (int i = 0; i < GAME_BOARD.length; i++) {
+            for (int j = 0; j < GAME_BOARD[i].length; j++) {
+                for (int k = 0; k < GAME_BOARD[i][j].length; k++) {
+                    GAME_BOARD[i][j][k] = 0;
+                }
+            }
+        }
     }
 
     public static String toAsciiString() {
