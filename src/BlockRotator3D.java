@@ -13,6 +13,7 @@ public class BlockRotator3D {
         }
     }
 
+    // Applies a rotation matrix to the shape's points
     private static List<int[]> applyRotation(int[][] shape, int[][] matrix) {
         List<int[]> result = new ArrayList<>();
         for (int[] point : shape) {
@@ -24,13 +25,35 @@ public class BlockRotator3D {
         return result;
     }
 
-    private static void placeShape(List<int[]> points, int originX, int originY, int originZ) {
+    // Places points of a shape on the game board
+    private static boolean placeShape(List<int[]> points, int originX, int originY, int originZ) {
+        checkZ(points);
         for (int[] p : points) {
             int x = originX + p[0];
             int y = originY + p[1];
             int z = originZ + p[2];
             if (x >= 0 && x < 8 && y >= 0 && y < 8 && z >= 0 && z < 3) {
                 Main.GAME_BOARD[x][y][z] = 1;
+            } else {
+                // TODO: revert entire shape placement when wrong
+                System.out.println("Invalid placement at (" + x + ", " + y + ", " + z + ")");
+                return false; // Invalid placement
+            }
+        }
+        return true;
+    }
+
+    private static void checkZ(List<int[]> points) {
+        boolean negativeZ = false;
+        for (int[] p : points) {
+            if (p[2] < 0) {
+                negativeZ = true;
+                break;
+            }
+        }
+        if (negativeZ) {
+            for (int[] p : points) {
+                p[2] = p[2] + 1;
             }
         }
     }
