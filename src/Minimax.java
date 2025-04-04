@@ -120,11 +120,16 @@ public class Minimax {
         PieceInventory currentInventory = player1Inventory; // Assuming Player 1 is maximizing
         int currentPlayer = 1;
 
-        for (Move move : generateMoves(currentInventory, currentPlayer)) {
+        List<Move> moves = generateMoves(currentInventory, currentPlayer);
+        int totalMoves = moves.size();
+        int currentMoveIndex = 0;
+
+        for (Move move : moves) {
+            currentMoveIndex++;
+
             if (tryMove(move)) {
-                //System.out.println("Trying move: " + move + " best value: " + bestValue);
                 currentInventory.usePiece(Main.getPieceType(move.shape));
-                int moveValue = minimax(MAX_DEPTH - 1, false);
+                int moveValue = minimax(MAX_DEPTH, false);
                 undoMove(move);
                 currentInventory.returnPiece(Main.getPieceType(move.shape));
 
@@ -133,7 +138,25 @@ public class Minimax {
                     bestMove = move;
                 }
             }
+
+            // Progress bar
+            int progress = (int) ((currentMoveIndex / (double) totalMoves) * 100);
+            StringBuilder progressBar = new StringBuilder("[");
+            int barLength = 50; // Adjust the bar length here
+            int filledLength = (int) (barLength * progress / 100.0);
+            for (int i = 0; i < barLength; i++) {
+                if (i < filledLength) {
+                    progressBar.append("=");
+                } else {
+                    progressBar.append(" ");
+                }
+            }
+            progressBar.append("] ").append(progress).append("%");
+
+            System.out.print("\r" + progressBar.toString());
         }
+        System.out.println(); // Move to next line after progress bar is complete
+
         System.out.println("Best move found: " + bestMove + " with value: " + bestValue);
         return bestMove;
     }
