@@ -88,5 +88,19 @@ public class Main {
         return sb.toString();
     }
 
-
+    // Helper function to flatten the game board for top view
+    public static int[][] flattenTopView() {
+        int[][] flatBoard = new int[8][8];
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                for (int z = 2; z >= 0; z--) {
+                    if (GAME_BOARD[x][y][z] != 0) {
+                        flatBoard[x][y] = GAME_BOARD[x][y][z];
+                        break;
+                    }
+                }
+            }
+        }
+        return flatBoard;
+    }
 }
