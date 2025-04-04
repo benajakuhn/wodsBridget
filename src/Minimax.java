@@ -96,8 +96,8 @@ public class Minimax {
     }
 
     private static boolean isTerminal() {
-        // TODO: Implement a terminal state check
-        return false;
+        // If both players have no pieces left, the game is over
+        return player1Inventory.isEmpty() && player2Inventory.isEmpty();
     }
 
     private static int evaluate() {

@@ -23,4 +23,8 @@ public class PieceInventory {
     public void returnPiece(String type) {
         pieces.put(type, pieces.get(type) + 1);
     }
+
+    public boolean isEmpty() {
+        return pieces.values().stream().allMatch(count -> count == 0);
+    }
 }
