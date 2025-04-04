@@ -119,32 +119,37 @@ public class BlockRotator3D {
     private static int[][][] generateRotationMatrices() {
         // 24 rotation matrices representing all possible rotations of a cube
         return new int[][][] {
-                // identity
-                {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}, // No rotation
+                // indices 0 - 3
+                {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}, // No rotation, identity matrix
                 {{1, 0, 0}, {0, 0, 1}, {0, -1, 0}}, // 90 degrees around X-axis
                 {{1, 0, 0}, {0, -1, 0}, {0, 0, -1}}, // 180 degrees around X-axis
                 {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}}, // 270 degrees around X-axis
 
+                // indices 4 - 7
                 {{0, 1, 0}, {-1, 0, 0}, {0, 0, 1}}, // 90 degrees around Y-axis
                 {{0, 0, 1}, {-1, 0, 0}, {0, 1, 0}}, // 90 degrees around Y-axis, then 90 degrees around Z-axis
                 {{0, -1, 0}, {-1, 0, 0}, {0, 0, -1}}, // 90 degrees around Y-axis, then 180 degrees around Z-axis
                 {{0, 0, -1}, {-1, 0, 0}, {0, -1, 0}}, // 90 degrees around Y-axis, then 270 degrees around Z-axis
 
+                // indices 8 - 11
                 {{-1, 0, 0}, {0, -1, 0}, {0, 0, 1}}, // 180 degrees around Y-axis
                 {{-1, 0, 0}, {0, 0, 1}, {0, 1, 0}}, // 180 degrees around Y-axis, then 90 degrees around Z-axis
                 {{-1, 0, 0}, {0, 1, 0}, {0, 0, -1}}, // 180 degrees around Y-axis, then 180 degrees around Z-axis
                 {{-1, 0, 0}, {0, 0, -1}, {0, -1, 0}}, // 180 degrees around Y-axis, then 270 degrees around Z-axis
 
+                // indices 12 - 15
                 {{0, -1, 0}, {1, 0, 0}, {0, 0, 1}}, // 270 degrees around Y-axis
                 {{0, 0, 1}, {1, 0, 0}, {0, -1, 0}}, // 270 degrees around Y-axis, then 90 degrees around Z-axis
                 {{0, 1, 0}, {1, 0, 0}, {0, 0, -1}}, // 270 degrees around Y-axis, then 180 degrees around Z-axis
                 {{0, 0, -1}, {1, 0, 0}, {0, 1, 0}}, // 270 degrees around Y-axis, then 270 degrees around Z-axis
 
+                // indices 16 - 19
                 {{0, 0, -1}, {0, 1, 0}, {1, 0, 0}}, // 90 degrees around Z-axis
                 {{0, 1, 0}, {0, 0, 1}, {1, 0, 0}}, // 90 degrees around Z-axis, then 90 degrees around X-axis
                 {{0, 0, 1}, {0, -1, 0}, {1, 0, 0}}, // 90 degrees around Z-axis, then 180 degrees around X-axis
                 {{0, -1, 0}, {0, 0, -1}, {1, 0, 0}}, // 90 degrees around Z-axis, then 270 degrees around X-axis
 
+                // indices 20 - 23
                 {{0, 0, -1}, {0, -1, 0}, {-1, 0, 0}}, // 270 degrees around Z-axis
                 {{0, -1, 0}, {0, 0, 1}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 90 degrees around X-axis
                 {{0, 0, 1}, {0, 1, 0}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 180 degrees around X-axis
