@@ -101,8 +101,16 @@ public class Minimax {
     }
 
     private static int evaluate() {
-        // TODO: Implement a heuristic evaluation function
-        return 0;
+        GameChecker.Result maxPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 1);
+        GameChecker.Result minPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 2);
+
+        if (maxPlayerResult.hasWon) {
+            return 100;
+        } else if (minPlayerResult.hasWon) {
+            return -100;
+        } else {
+            return maxPlayerResult.longestPath - minPlayerResult.longestPath;
+        }
     }
 
     private static String getPieceType(int[][] shape) {
