@@ -31,7 +31,7 @@ public class BlockRotator3D {
     }
 
     // Applies a rotation matrix to the shape's points
-    private static List<int[]> applyRotation(int[][] shape, int[][] matrix) {
+    public static List<int[]> applyRotation(int[][] shape, int[][] matrix) {
         List<int[]> result = new ArrayList<>();
         for (int[] point : shape) {
             int x = matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2] * point[2];
@@ -43,7 +43,7 @@ public class BlockRotator3D {
     }
 
     // Places points of a shape on the game board
-    private static boolean placeShape(List<int[]> points, int originX, int originY, int player) {
+    public static boolean placeShape(List<int[]> points, int originX, int originY, int player) {
         int originZ = 0;
         List<int[]> placed = new ArrayList<>();
         boolean validPlacement = true;
@@ -87,7 +87,7 @@ public class BlockRotator3D {
         }
     }
 
-    private static void removeShape(List<int[]> points, int originX, int originY) {
+    public static void removeShape(List<int[]> points, int originX, int originY) {
         int originZ = 0;
         checkZ(points);
 
