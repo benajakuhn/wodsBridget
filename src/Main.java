@@ -1,15 +1,24 @@
 public class Main {
     public static final int[][][] GAME_BOARD = new int[8][8][3];
-    public static int[][] tBlockShape = new int[][] {
-        {0, 0, 0},
-        {-1, 0, 0},
-        {1, 0, 0},
-        {0, 1, 0}
+    public static final int[][] tBlockShape = new int[][] {
+        {0, 0, 0}, // center block
+        {-1, 0, 0}, //left block
+        {1, 0, 0}, // right block
+        {0, 1, 0} // top block
     };
+
+    public static final int[][] lBlockShape = new int[][] {
+        {0, 0, 0}, // center block
+        {-1, 0, 0}, //left block
+        {1, 0, 0}, // right block
+        {1, 1, 0} // bottom block
+    };
+
 
     public static void main(String[] args) {
 
-        BlockRotator3D.placeAllRotations(tBlockShape, 3, 3, 1);
+        BlockRotator3D.placeAllRotations(tBlockShape, 3, 3, 2);
+        BlockRotator3D.placeAllRotations(lBlockShape, 3, 3, 1);
     }
 
     public static void clearGameBoard() {
