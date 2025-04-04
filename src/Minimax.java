@@ -122,7 +122,7 @@ public class Minimax {
 
         for (Move move : generateMoves(currentInventory, currentPlayer)) {
             if (tryMove(move)) {
-                System.out.println("Trying move: " + move + " best value: " + bestValue);
+                //System.out.println("Trying move: " + move + " best value: " + bestValue);
                 currentInventory.usePiece(Main.getPieceType(move.shape));
                 int moveValue = minimax(MAX_DEPTH - 1, false);
                 undoMove(move);
@@ -134,6 +134,7 @@ public class Minimax {
                 }
             }
         }
+        System.out.println("Best move found: " + bestMove + " with value: " + bestValue);
         return bestMove;
     }
 }

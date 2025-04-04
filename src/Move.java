@@ -21,13 +21,18 @@ public class Move {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Move{");
         sb.append("pieceType=").append(Main.getPieceType(shape));
-        sb.append(", rotationMatrix=").append(java.util.Arrays.deepToString(rotationMatrix));
+
+        int rotationIndex = java.util.stream.IntStream.range(0, BlockRotator3D.ROTATION_MATRICES.length)
+                .filter(i -> java.util.Arrays.deepEquals(rotationMatrix, BlockRotator3D.ROTATION_MATRICES[i]))
+                .findFirst()
+                .orElse(-1);
+
+        sb.append(", rotationIndex=").append(rotationIndex);
+
         sb.append(", x=").append(x);
         sb.append(", y=").append(y);
         sb.append(", player=").append(player);
-        sb.append('}');
         return sb.toString();
     }
 }
