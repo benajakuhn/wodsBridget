@@ -1,8 +1,11 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class BlockRotator3D {
-    private static final int[][][] ROTATION_MATRICES = generateRotationMatrices();
+    public static final int[][][] ROTATION_MATRICES = generateRotationMatrices();
+    public static final int[] TBLOCK_ROTATION_INDICES = getAllRotationIndices(Main.tBlockShape);
+    public static final int[] LBLOCK_ROTATION_INDICES = getAllRotationIndices(Main.lBlockShape);
+    public static final int[] ZBLOCK_ROTATION_INDICES = getAllRotationIndices(Main.zBlockShape);
+    public static final int[] OBLOCK_ROTATION_INDICES = getAllRotationIndices(Main.oBlockShape);
 
     public static void placeAllRotations(int[][] shape, int originX, int originY, int player) {
         for (int[][] rotation : ROTATION_MATRICES) {
@@ -12,6 +15,18 @@ public class BlockRotator3D {
                 Main.clearGameBoard();
             }
 
+        }
+    }
+
+    public static void placeAllUniqueRotations(int[][] shape, int originX, int originY, int player, int[] rotationIndices) {
+
+        // Place each unique rotation of the shape on the game board
+        for (int index : rotationIndices) {
+            List<int[]> transformed = applyRotation(shape, ROTATION_MATRICES[index]);
+            if (placeShape(transformed, originX, originY, player)) {
+                System.out.println(Main.toAsciiString());
+                Main.clearGameBoard();
+            }
         }
     }
 
@@ -104,37 +119,62 @@ public class BlockRotator3D {
     private static int[][][] generateRotationMatrices() {
         // 24 rotation matrices representing all possible rotations of a cube
         return new int[][][] {
-            // identity
-            {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}, // No rotation
-            {{1, 0, 0}, {0, 0, 1}, {0, -1, 0}}, // 90 degrees around X-axis
-            {{1, 0, 0}, {0, -1, 0}, {0, 0, -1}}, // 180 degrees around X-axis
-            {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}}, // 270 degrees around X-axis
+                // identity
+                {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}, // No rotation
+                {{1, 0, 0}, {0, 0, 1}, {0, -1, 0}}, // 90 degrees around X-axis
+                {{1, 0, 0}, {0, -1, 0}, {0, 0, -1}}, // 180 degrees around X-axis
+                {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}}, // 270 degrees around X-axis
 
-            {{0, 1, 0}, {-1, 0, 0}, {0, 0, 1}}, // 90 degrees around Y-axis
-            {{0, 0, 1}, {-1, 0, 0}, {0, 1, 0}}, // 90 degrees around Y-axis, then 90 degrees around Z-axis
-            {{0, -1, 0}, {-1, 0, 0}, {0, 0, -1}}, // 90 degrees around Y-axis, then 180 degrees around Z-axis
-            {{0, 0, -1}, {-1, 0, 0}, {0, -1, 0}}, // 90 degrees around Y-axis, then 270 degrees around Z-axis
+                {{0, 1, 0}, {-1, 0, 0}, {0, 0, 1}}, // 90 degrees around Y-axis
+                {{0, 0, 1}, {-1, 0, 0}, {0, 1, 0}}, // 90 degrees around Y-axis, then 90 degrees around Z-axis
+                {{0, -1, 0}, {-1, 0, 0}, {0, 0, -1}}, // 90 degrees around Y-axis, then 180 degrees around Z-axis
+                {{0, 0, -1}, {-1, 0, 0}, {0, -1, 0}}, // 90 degrees around Y-axis, then 270 degrees around Z-axis
 
-            {{-1, 0, 0}, {0, -1, 0}, {0, 0, 1}}, // 180 degrees around Y-axis
-            {{-1, 0, 0}, {0, 0, 1}, {0, 1, 0}}, // 180 degrees around Y-axis, then 90 degrees around Z-axis
-            {{-1, 0, 0}, {0, 1, 0}, {0, 0, -1}}, // 180 degrees around Y-axis, then 180 degrees around Z-axis
-            {{-1, 0, 0}, {0, 0, -1}, {0, -1, 0}}, // 180 degrees around Y-axis, then 270 degrees around Z-axis
+                {{-1, 0, 0}, {0, -1, 0}, {0, 0, 1}}, // 180 degrees around Y-axis
+                {{-1, 0, 0}, {0, 0, 1}, {0, 1, 0}}, // 180 degrees around Y-axis, then 90 degrees around Z-axis
+                {{-1, 0, 0}, {0, 1, 0}, {0, 0, -1}}, // 180 degrees around Y-axis, then 180 degrees around Z-axis
+                {{-1, 0, 0}, {0, 0, -1}, {0, -1, 0}}, // 180 degrees around Y-axis, then 270 degrees around Z-axis
 
-            {{0, -1, 0}, {1, 0, 0}, {0, 0, 1}}, // 270 degrees around Y-axis
-            {{0, 0, 1}, {1, 0, 0}, {0, -1, 0}}, // 270 degrees around Y-axis, then 90 degrees around Z-axis
-            {{0, 1, 0}, {1, 0, 0}, {0, 0, -1}}, // 270 degrees around Y-axis, then 180 degrees around Z-axis
-            {{0, 0, -1}, {1, 0, 0}, {0, 1, 0}}, // 270 degrees around Y-axis, then 270 degrees around Z-axis
+                {{0, -1, 0}, {1, 0, 0}, {0, 0, 1}}, // 270 degrees around Y-axis
+                {{0, 0, 1}, {1, 0, 0}, {0, -1, 0}}, // 270 degrees around Y-axis, then 90 degrees around Z-axis
+                {{0, 1, 0}, {1, 0, 0}, {0, 0, -1}}, // 270 degrees around Y-axis, then 180 degrees around Z-axis
+                {{0, 0, -1}, {1, 0, 0}, {0, 1, 0}}, // 270 degrees around Y-axis, then 270 degrees around Z-axis
 
-            {{0, 0, -1}, {0, 1, 0}, {1, 0, 0}}, // 90 degrees around Z-axis
-            {{0, 1, 0}, {0, 0, 1}, {1, 0, 0}}, // 90 degrees around Z-axis, then 90 degrees around X-axis
-            {{0, 0, 1}, {0, -1, 0}, {1, 0, 0}}, // 90 degrees around Z-axis, then 180 degrees around X-axis
-            {{0, -1, 0}, {0, 0, -1}, {1, 0, 0}}, // 90 degrees around Z-axis, then 270 degrees around X-axis
+                {{0, 0, -1}, {0, 1, 0}, {1, 0, 0}}, // 90 degrees around Z-axis
+                {{0, 1, 0}, {0, 0, 1}, {1, 0, 0}}, // 90 degrees around Z-axis, then 90 degrees around X-axis
+                {{0, 0, 1}, {0, -1, 0}, {1, 0, 0}}, // 90 degrees around Z-axis, then 180 degrees around X-axis
+                {{0, -1, 0}, {0, 0, -1}, {1, 0, 0}}, // 90 degrees around Z-axis, then 270 degrees around X-axis
 
-            {{0, 0, -1}, {0, -1, 0}, {-1, 0, 0}}, // 270 degrees around Z-axis
-            {{0, -1, 0}, {0, 0, 1}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 90 degrees around X-axis
-            {{0, 0, 1}, {0, 1, 0}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 180 degrees around X-axis
-            {{0, 1, 0}, {0, 0, -1}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 270 degrees around X-axis
+                {{0, 0, -1}, {0, -1, 0}, {-1, 0, 0}}, // 270 degrees around Z-axis
+                {{0, -1, 0}, {0, 0, 1}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 90 degrees around X-axis
+                {{0, 0, 1}, {0, 1, 0}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 180 degrees around X-axis
+                {{0, 1, 0}, {0, 0, -1}, {-1, 0, 0}}, // 270 degrees around Z-axis, then 270 degrees around X-axis
         };
+    }
+
+    private static int[] getAllRotationIndices(int[][] shape) {
+        List<Integer> indices = new ArrayList<>();
+        Set<Integer> uniqueShapes = new HashSet<>();
+
+        // Iterate over all rotation matrices
+        for (int i = 0; i < ROTATION_MATRICES.length; i++) {
+            // Get the rotated shape
+            List<int[]> rotated = applyRotation(shape, ROTATION_MATRICES[i]);
+
+            // Calculate a hash code for the rotated shape
+            int hashCode = rotated.stream()
+                    .map(Arrays::hashCode)
+                    .sorted()
+                    .reduce(0, Integer::sum);
+
+            // If this rotation produces a shape we haven't seen before, add its index.
+            if (uniqueShapes.add(hashCode)) {
+                indices.add(i);
+            }
+        }
+
+        // Convert the list of indices to an array
+        return indices.stream().mapToInt(Integer::intValue).toArray();
     }
 }
 
