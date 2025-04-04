@@ -49,33 +49,37 @@ public class Main {
             BlockRotator3D.placeShape(bestMove.getTransformedShape(), bestMove.x, bestMove.y, bestMove.player);
             Minimax.player1Inventory.usePiece(getPieceType(bestMove.shape));
             System.out.println("AI placed a piece:");
+            System.out.println(bestMove);
             System.out.println(toAsciiString());
 
             if (checkWin()) break;
 
             // Min Player (Human) Move
-            System.out.println("Your turn! Enter piece type (T/L/Z/O), rotation index (0-23), x (0-7), y (0-7): ");
-            String input = scanner.nextLine();
-            String[] parts = input.trim().split("\\s+");
-            if (parts.length != 4) {
-                System.out.println("Invalid input. Try again.");
-                continue;
-            }
+            while (true) {
+                System.out.println("Your turn! Enter piece type (T/L/Z/O), rotation index (0-23), x (0-7), y (0-7): ");
+                String input = scanner.nextLine();
+                String[] parts = input.trim().split("\\s+");
+                if (parts.length != 4) {
+                    System.out.println("Invalid input. Try again.");
+                    continue;
+                }
 
-            String pieceType = parts[0].toUpperCase();
-            int rotationIndex = Integer.parseInt(parts[1]);
-            int x = Integer.parseInt(parts[2]);
-            int y = Integer.parseInt(parts[3]);
+                String pieceType = parts[0].toUpperCase();
+                int rotationIndex = Integer.parseInt(parts[1]);
+                System.out.println("Rotation index: " + rotationIndex);
+                int x = Integer.parseInt(parts[2]);
+                int y = Integer.parseInt(parts[3]);
 
-            int[][] shape = getShapeFromType(pieceType);
-            int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
-            Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
+                int[][] shape = getShapeFromType(pieceType);
+                int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
+                Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
 
-            if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
-                Minimax.player2Inventory.usePiece(pieceType);
-            } else {
-                System.out.println("Invalid move. Try again.");
-                continue;
+                if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
+                    Minimax.player2Inventory.usePiece(pieceType);
+                    break; // Exit the loop if the move is valid
+                } else {
+                    System.out.println("Invalid move. Try again.");
+                }
             }
 
             System.out.println("You placed a piece:");
