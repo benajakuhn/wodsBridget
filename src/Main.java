@@ -33,11 +33,6 @@ public class Main {
 
 
     public static void main(String[] args) {
-        BlockRotator3D.placeAllUniqueRotations(tBlockShape, 3, 3, 2, BlockRotator3D.TBLOCK_ROTATION_INDICES);
-        BlockRotator3D.placeAllUniqueRotations(lBlockShape, 3, 3, 1, BlockRotator3D.LBLOCK_ROTATION_INDICES);
-        BlockRotator3D.placeAllUniqueRotations(zBlockShape, 3, 3, 2, BlockRotator3D.ZBLOCK_ROTATION_INDICES);
-        BlockRotator3D.placeAllUniqueRotations(oBlockShape, 3, 3, 1, BlockRotator3D.OBLOCK_ROTATION_INDICES);
-
 
     }
 

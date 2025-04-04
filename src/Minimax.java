@@ -120,4 +120,27 @@ public class Minimax {
         if (shape == Main.oBlockShape) return "O";
         throw new IllegalArgumentException("Unknown piece type!");
     }
+
+    public static Move findBestMove() {
+        int bestValue = Integer.MIN_VALUE;
+        Move bestMove = null;
+
+        PieceInventory currentInventory = player1Inventory; // Assuming Player 1 is maximizing
+        int currentPlayer = 1;
+
+        for (Move move : generateMoves(currentInventory, currentPlayer)) {
+            if (tryMove(move)) {
+                currentInventory.usePiece(getPieceType(move.shape));
+                int moveValue = minimax(MAX_DEPTH - 1, false);
+                undoMove(move);
+                currentInventory.returnPiece(getPieceType(move.shape));
+
+                if (moveValue > bestValue) {
+                    bestValue = moveValue;
+                    bestMove = move;
+                }
+            }
+        }
+        return bestMove;
+    }
 }
