@@ -161,6 +161,8 @@ public class BlockRotator3D {
             // Get the rotated shape
             List<int[]> rotated = applyRotation(shape, ROTATION_MATRICES[i]);
 
+            checkZ(rotated);
+
             // Calculate a hash code for the rotated shape
             int hashCode = rotated.stream()
                     .map(Arrays::hashCode)
