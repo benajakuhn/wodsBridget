@@ -101,7 +101,7 @@ public class BlockRotator3D {
     }
 
 
-    private static void checkZ(List<int[]> points) {
+    public static void checkZ(List<int[]> points) {
         boolean negativeZ = false;
         for (int[] p : points) {
             if (p[2] < 0) {
