@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -196,4 +198,50 @@ public class Main {
         }
         return flatBoard;
     }
+
+    public static void testAllRotations(int[][] blockShape, int[] rotationIndices, int originX, int originY, int player) {
+        for (int index : rotationIndices) {
+            int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[index];
+            List<int[]> transformed = BlockRotator3D.applyRotation(blockShape, rotationMatrix);
+
+            BlockRotator3D.checkZ(transformed); // Important to adjust Z values
+
+            // Place manually without checks
+            List<int[]> placed = new ArrayList<>();
+            boolean canPlace = true;
+            for (int[] p : transformed) {
+                int x = originX + p[0];
+                int y = originY + p[1];
+                int z = p[2];
+
+                if (x < 0 || x >= 8 || y < 0 || y >= 8 || z < 0 || z >= 3) {
+                    canPlace = false;
+                    break;
+                }
+
+                if (Main.GAME_BOARD[x][y][z] != 0) {
+                    canPlace = false;
+                    break;
+                }
+                placed.add(new int[]{x, y, z});
+            }
+
+            if (canPlace) {
+                for (int[] p : placed) {
+                    Main.GAME_BOARD[p[0]][p[1]][p[2]] = player;
+                }
+
+                System.out.println("Rotation Index: " + index);
+                System.out.println(Main.toAsciiString());
+
+                // Remove after printing
+                for (int[] p : placed) {
+                    Main.GAME_BOARD[p[0]][p[1]][p[2]] = 0;
+                }
+            } else {
+                System.out.println("Rotation Index " + index + " could not be placed due to out of bounds or collision.");
+            }
+        }
+    }
+
 }
