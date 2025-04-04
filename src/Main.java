@@ -30,7 +30,7 @@ public class Main {
 
         // Build each level's output line-by-line
         for (int z = 2; z >= 0; z--) {
-            linesPerLevel[z][0] = new StringBuilder("Level " + z + ":"); // Title line
+            linesPerLevel[z][0] = new StringBuilder("Level " + z + ":        "); // Title line
             for (int y = 0; y < 8; y++) {
                 linesPerLevel[z][y + 1] = new StringBuilder();
                 for (int x = 0; x < 8; x++) {
