@@ -19,10 +19,10 @@ public class Minimax {
             int maxEval = Integer.MIN_VALUE;
             for (Move move : generateMoves(currentInventory, currentPlayer)) {
                 if (tryMove(move)) {
-                    currentInventory.usePiece(getPieceType(move.shape));
+                    currentInventory.usePiece(Main.getPieceType(move.shape));
                     int eval = minimax(depth - 1, false);
                     undoMove(move);
-                    currentInventory.returnPiece(getPieceType(move.shape));
+                    currentInventory.returnPiece(Main.getPieceType(move.shape));
                     maxEval = Math.max(maxEval, eval);
                 }
             }
@@ -31,10 +31,10 @@ public class Minimax {
             int minEval = Integer.MAX_VALUE;
             for (Move move : generateMoves(currentInventory, currentPlayer)) {
                 if (tryMove(move)) {
-                    currentInventory.usePiece(getPieceType(move.shape));
+                    currentInventory.usePiece(Main.getPieceType(move.shape));
                     int eval = minimax(depth - 1, true);
                     undoMove(move);
-                    currentInventory.returnPiece(getPieceType(move.shape));
+                    currentInventory.returnPiece(Main.getPieceType(move.shape));
                     minEval = Math.min(minEval, eval);
                 }
             }
@@ -113,14 +113,6 @@ public class Minimax {
         }
     }
 
-    private static String getPieceType(int[][] shape) {
-        if (shape == Main.tBlockShape) return "T";
-        if (shape == Main.lBlockShape) return "L";
-        if (shape == Main.zBlockShape) return "Z";
-        if (shape == Main.oBlockShape) return "O";
-        throw new IllegalArgumentException("Unknown piece type!");
-    }
-
     public static Move findBestMove() {
         int bestValue = Integer.MIN_VALUE;
         Move bestMove = null;
@@ -130,10 +122,11 @@ public class Minimax {
 
         for (Move move : generateMoves(currentInventory, currentPlayer)) {
             if (tryMove(move)) {
-                currentInventory.usePiece(getPieceType(move.shape));
+                System.out.println("Trying move: " + move + " best value: " + bestValue);
+                currentInventory.usePiece(Main.getPieceType(move.shape));
                 int moveValue = minimax(MAX_DEPTH - 1, false);
                 undoMove(move);
-                currentInventory.returnPiece(getPieceType(move.shape));
+                currentInventory.returnPiece(Main.getPieceType(move.shape));
 
                 if (moveValue > bestValue) {
                     bestValue = moveValue;
