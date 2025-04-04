@@ -8,14 +8,6 @@ public class Main {
     };
 
     public static void main(String[] args) {
-//        for (int i = 0; i < 4; i++) {
-//            block.place(3, 3);
-//            block.rotate();
-//            System.out.println(toAsciiString());
-//            clearGameBoard();
-//        }
-
-
 
         BlockRotator3D.placeAllRotations(tBlockShape, 3, 3, 0);
     }
