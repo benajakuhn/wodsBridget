@@ -17,4 +17,17 @@ public class Move {
     public List<int[]> getTransformedShape() {
         return BlockRotator3D.applyRotation(shape, rotationMatrix);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Move{");
+        sb.append("pieceType=").append(Main.getPieceType(shape));
+        sb.append(", rotationMatrix=").append(java.util.Arrays.deepToString(rotationMatrix));
+        sb.append(", x=").append(x);
+        sb.append(", y=").append(y);
+        sb.append(", player=").append(player);
+        sb.append('}');
+        return sb.toString();
+    }
 }
