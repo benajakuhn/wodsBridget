@@ -1,5 +1,8 @@
+import java.util.Arrays;
+
 public class Main {
     public static final int[][][] GAME_BOARD = new int[8][8][3];
+
     public static final int[][] tBlockShape = new int[][] {
         {0, 0, 0}, // center block
         {-1, 0, 0}, //left block
@@ -14,11 +17,30 @@ public class Main {
         {1, 1, 0} // bottom block
     };
 
+    public static final int[][] zBlockShape = new int[][] {
+        {0, 0, 0}, // center block
+        {1, 0, 0}, // right block
+        {0, 1, 0}, // bottom block
+        {-1, 1, 0} // bottom left block
+    };
+
+    public static final int[][] oBlockShape = new int[][] {
+        {0, 0, 0}, // center block
+        {1, 0, 0}, // right block
+        {0, 1, 0}, // bottom block
+        {1, 1, 0} // bottom right block
+    };
+
 
     public static void main(String[] args) {
+        // print index 16 of the rotation matrices
+        System.out.println(Arrays.deepToString(BlockRotator3D.ROTATION_MATRICES[16]));
+
 
         BlockRotator3D.placeAllRotations(tBlockShape, 3, 3, 2);
         BlockRotator3D.placeAllRotations(lBlockShape, 3, 3, 1);
+        BlockRotator3D.placeAllRotations(zBlockShape, 3, 3, 2);
+        BlockRotator3D.placeAllRotations(oBlockShape, 3, 3, 1);
     }
 
     public static void clearGameBoard() {
