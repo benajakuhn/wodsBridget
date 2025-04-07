@@ -151,7 +151,7 @@ public class BlockRotator3D {
                 // indices: 20 - 23, rotated 270 degrees around Z-axis
                 {{0, 0, -1}, {0, -1, 0}, {-1, 0, 0}},  // 270 degrees around Z-axis
                 {{0, -1, 0}, {0, 0, 1}, {-1, 0, 0}},   // 270 degrees around Z-axis, then 90 degrees around X-axis
-                {{0, 0, 1}, {0, 1, 0}, {-1, 0, 0}},    // 270 degrees around Z-axis, then 180 degrees around X-axis
+                {{0, 1, 0}, {-1, 0, 0}, {0, 0, 1}},    // 270 degrees around Z-axis, then 180 degrees around X-axis
                 {{0, 1, 0}, {0, 0, -1}, {-1, 0, 0}},   // 270 degrees around Z-axis, then 270 degrees around X-axis
         };
     }
