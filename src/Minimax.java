@@ -7,6 +7,8 @@ public class Minimax {
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
+    public static int evaluatedNodes = 0;
+
     public static int minimax(int depth, boolean maximizingPlayer) {
         if (depth == 0 || isTerminal()) {
             return evaluate();
@@ -19,6 +21,7 @@ public class Minimax {
             int maxEval = Integer.MIN_VALUE;
             for (Move move : generateMoves(currentInventory, currentPlayer)) {
                 if (tryMove(move)) {
+                    evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
                     int eval = minimax(depth - 1, false);
                     undoMove(move);
@@ -31,6 +34,7 @@ public class Minimax {
             int minEval = Integer.MAX_VALUE;
             for (Move move : generateMoves(currentInventory, currentPlayer)) {
                 if (tryMove(move)) {
+                    evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
                     int eval = minimax(depth - 1, true);
                     undoMove(move);
@@ -114,6 +118,7 @@ public class Minimax {
     }
 
     public static Move findBestMove() {
+        long startTime = System.nanoTime();
         int bestValue = Integer.MIN_VALUE;
         Move bestMove = null;
 
@@ -128,8 +133,9 @@ public class Minimax {
             currentMoveIndex++;
 
             if (tryMove(move)) {
+                evaluatedNodes++;
                 currentInventory.usePiece(Main.getPieceType(move.shape));
-                int moveValue = minimax(MAX_DEPTH, false);
+                int moveValue = minimax(MAX_DEPTH - 1, false);
                 undoMove(move);
                 currentInventory.returnPiece(Main.getPieceType(move.shape));
 
@@ -157,6 +163,12 @@ public class Minimax {
         }
         System.out.println(); // Move to next line after progress bar is complete
 
+        System.out.println("Evaluated nodes at Depth "+ MAX_DEPTH +": " + evaluatedNodes);
+
+        long endTime = System.nanoTime(); // End time measurement
+        long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
+        System.out.println("Execution time: " + duration + " ms");
+        
         System.out.println("Best move found: " + bestMove + " with value: " + bestValue);
         return bestMove;
     }
