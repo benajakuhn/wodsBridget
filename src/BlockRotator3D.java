@@ -18,15 +18,25 @@ public class BlockRotator3D {
         }
     }
 
-    public static void placeAllUniqueRotations(int[][] shape, int originX, int originY, int player, int[] rotationIndices) {
+    public static void placeAllUniqueRotations(int[][] shape, int[] rotationIndices) {
 
         // Place each unique rotation of the shape on the game board
         for (int index : rotationIndices) {
             List<int[]> transformed = applyRotation(shape, ROTATION_MATRICES[index]);
-            if (placeShape(transformed, originX, originY, player)) {
-                System.out.println(Main.toAsciiString());
-                Main.clearGameBoard();
+            checkZ(transformed);
+
+            for (int[] p : transformed) {
+                int x = 3 + p[0];
+                int y = 3 + p[1];
+                int z = p[2];
+                Main.GAME_BOARD[x][y][z] = 1;
             }
+
+            System.out.println("```text");
+            System.out.println("Rotation Index: " + index);
+            System.out.println(Main.toAsciiString());
+            System.out.println("```");
+            Main.clearGameBoard();
         }
     }
 
@@ -158,30 +168,48 @@ public class BlockRotator3D {
 
 
     private static int[] getAllRotationIndices(int[][] shape) {
-        List<Integer> indices = new ArrayList<>();
-        Set<Integer> uniqueShapes = new HashSet<>();
+        // A set to store unique state signatures
+        Set<String> seenStates = new HashSet<>();
+        // A list to store the indices of rotations that produce a unique state
+        List<Integer> uniqueRotationIndices = new ArrayList<>();
 
         // Iterate over all rotation matrices
         for (int i = 0; i < ROTATION_MATRICES.length; i++) {
-            // Get the rotated shape
+            // Get the rotated shape (assume applyRotation returns List<int[]>)
             List<int[]> rotated = applyRotation(shape, ROTATION_MATRICES[i]);
 
-            checkZ(rotated);
+            // Create a list to hold the transformed positions
+            List<String> positions = new ArrayList<>();
 
-            // Calculate a hash code for the rotated shape
-            int hashCode = rotated.stream()
-                    .map(Arrays::hashCode)
-                    .sorted()
-                    .reduce(0, Integer::sum);
+            // Instead of directly modifying the board,
+            // calculate where the rotated shape would be placed.
+            for (int[] p : rotated) {
+                int x = 3 + p[0];
+                int y = 3 + p[1];
+                int z = 1 + p[2];
+                // Convert each coordinate to a string representation
+                positions.add(x + "," + y + "," + z);
+            }
 
-            // If this rotation produces a shape we haven't seen before, add its index.
-            if (uniqueShapes.add(hashCode)) {
-                indices.add(i);
+            // Sort the positions so that the order does not affect the signature.
+            Collections.sort(positions);
+            // Create a signature by joining all position strings
+            String stateSignature = String.join(";", positions);
+
+            // Check if this state has been seen before.
+            if (!seenStates.contains(stateSignature)) {
+                seenStates.add(stateSignature);
+                uniqueRotationIndices.add(i);
             }
         }
 
-        // Convert the list of indices to an array
-        return indices.stream().mapToInt(Integer::intValue).toArray();
+        // Convert the list of indices to an array of ints.
+        int[] result = new int[uniqueRotationIndices.size()];
+        for (int j = 0; j < uniqueRotationIndices.size(); j++) {
+            result[j] = uniqueRotationIndices.get(j);
+        }
+
+        return result;
     }
 }
 
