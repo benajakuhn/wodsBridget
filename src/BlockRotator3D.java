@@ -120,12 +120,12 @@ public class BlockRotator3D {
         return new int[][][] {
                 // indices: 0 - 3
                 {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},    // identity matrix
-                {{1, 0, 0}, {0, 0, 1}, {0, -1, 0}},   // 90 degrees around X-axis
+                {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}},   // 90 degrees around X-axis
                 {{1, 0, 0}, {0, -1, 0}, {0, 0, -1}},  // 180 degrees around X-axis
-                {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}},   // 270 degrees around X-axis
+                {{1, 0, 0}, {0, 0, 1}, {0, -1, 0}},   // 270 degrees around X-axis
 
                 // indices: 4 - 7, rotated 90 degrees around Y-axis
-                {{0, 1, 0}, {-1, 0, 0}, {0, 0, 1}},   // 90 degrees around Y-axis
+                {{0, 0, 1}, {0, 1, 0}, {-1, 0, 0}},   // 90 degrees around Y-axis
                 {{0, 0, 1}, {-1, 0, 0}, {0, 1, 0}},   // 90 degrees around Y-axis, then 90 degrees around Z-axis
                 {{0, -1, 0}, {-1, 0, 0}, {0, 0, -1}}, // 90 degrees around Y-axis, then 180 degrees around Z-axis
                 {{0, 0, -1}, {-1, 0, 0}, {0, -1, 0}}, // 90 degrees around Y-axis, then 270 degrees around Z-axis
