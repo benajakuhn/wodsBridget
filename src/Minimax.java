@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Minimax {
 
-    private static final int MAX_DEPTH = 3; // Adjustable
+    private static final int MAX_DEPTH = 2; // Adjustable
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -83,7 +83,7 @@ public class Minimax {
         );
     }
 
-    private static List<Move> generateMoves(PieceInventory inventory, int player) {
+    public static List<Move> generateMoves(PieceInventory inventory, int player) {
         List<Move> moves = new ArrayList<>();
 
         if (inventory.hasPiece("T")) {
