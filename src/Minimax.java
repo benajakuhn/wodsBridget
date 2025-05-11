@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Minimax {
 
-    private static final int MAX_DEPTH = 2; // Adjustable
+    private static final int MAX_DEPTH = 3; // Adjustable
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -129,9 +129,9 @@ public class Minimax {
         GameChecker.Result minPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 2);
 
         if (maxPlayerResult.hasWon) {
-            return 100;
+            return 1000;
         } else if (minPlayerResult.hasWon) {
-            return -100;
+            return -1000;
         } else {
             return maxPlayerResult.longestPath - minPlayerResult.longestPath;
         }
