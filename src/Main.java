@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Collections; // Added for shuffling moves
 
 public class Main {
     public static final int[][][] GAME_BOARD = new int[8][8][3];
@@ -33,6 +34,8 @@ public class Main {
             {1, 1, 0} // bottom right block
     };
 
+    public static boolean IS_RANDOM_PLAYER_ACTIVE = true;
+
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -57,39 +60,72 @@ public class Main {
             if (checkWin()) break;
 
             // Min Player (Human) Move
-            while (true) {
-                System.out.println("Your turn! Enter piece type (T/L/Z/O), rotation index (0-23), x (0-7), y (0-7): ");
-                String input = scanner.nextLine();
-                String[] parts = input.trim().split("\\s+");
-                if (parts.length != 4) {
-                    System.out.println("Invalid input. Try again.");
-                    continue;
-                }
-
-                String pieceType = parts[0].toUpperCase();
-                int rotationIndex = Integer.parseInt(parts[1]);
-                System.out.println("Rotation index: " + rotationIndex);
-                int x = Integer.parseInt(parts[2]);
-                int y = Integer.parseInt(parts[3]);
-
-                int[][] shape = getShapeFromType(pieceType);
-                int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
-                Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
-
-                if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
-                    Minimax.player2Inventory.usePiece(pieceType);
-                    break; // Exit the loop if the move is valid
+            if (IS_RANDOM_PLAYER_ACTIVE) {
+                System.out.println("Random Player's turn. Thinking...");
+                Move randomMove = generateRandomMove(2); // Player 2
+                if (randomMove != null) {
+                    BlockRotator3D.placeShape(randomMove.getTransformedShape(), randomMove.x, randomMove.y, randomMove.player);
+                    Minimax.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                    System.out.println("Random Player placed a piece:");
+                    System.out.println(randomMove);
                 } else {
-                    System.out.println("Invalid move. Try again.");
+                    System.out.println("Random Player has no moves left!");
                 }
-            }
+            } else {
+                while (true) {
+                    System.out.println("Your turn! Enter piece type (T/L/Z/O), rotation index (0-23), x (0-7), y (0-7): ");
+                    String input = scanner.nextLine();
+                    String[] parts = input.trim().split("\\s+");
+                    if (parts.length != 4) {
+                        System.out.println("Invalid input. Try again.");
+                        continue;
+                    }
 
-            System.out.println("You placed a piece:");
+                    String pieceType = parts[0].toUpperCase();
+                    int rotationIndex = Integer.parseInt(parts[1]);
+                    System.out.println("Rotation index: " + rotationIndex);
+                    int x = Integer.parseInt(parts[2]);
+                    int y = Integer.parseInt(parts[3]);
+
+                    int[][] shape = getShapeFromType(pieceType);
+                    int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
+                    Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
+
+                    if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
+                        Minimax.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                        break; // Exit the loop if the move is valid
+                    } else {
+                        System.out.println("Invalid move. Try again.");
+                    }
+                }
+                System.out.println("You placed a piece:");
+            }
             System.out.println(toAsciiString());
+
 
             if (checkWin()) break;
         }
         scanner.close();
+    }
+
+    public static Move generateRandomMove(int player) {
+        PieceInventory currentInventory = (player == 1) ? Minimax.player1Inventory : Minimax.player2Inventory;
+        List<Move> allPossibleMoves = Minimax.generateMoves(currentInventory, player);
+
+        if (allPossibleMoves.isEmpty()) {
+            return null;
+        }
+
+        Collections.shuffle(allPossibleMoves);
+
+        for (Move potentialMove : allPossibleMoves) {
+            List<int[]> transformedShape = potentialMove.getTransformedShape();
+            if (BlockRotator3D.placeShape(transformedShape, potentialMove.x, potentialMove.y, potentialMove.player)) {
+                BlockRotator3D.removeShape(transformedShape, potentialMove.x, potentialMove.y);
+                return potentialMove;
+            }
+        }
+        return null;
     }
 
     public static boolean checkWin() {
