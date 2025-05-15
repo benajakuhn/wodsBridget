@@ -46,13 +46,13 @@ public class Main {
 
             // Max Player (AI) Move
             System.out.println("AI is thinking...");
-            Move bestMove = Minimax.findBestMove();
+            Move bestMove = Minimax_AlphaBeta.findBestMove();
             if (bestMove == null) {
                 System.out.println("AI has no moves left! Game over.");
                 break;
             }
             BlockRotator3D.placeShape(bestMove.getTransformedShape(), bestMove.x, bestMove.y, bestMove.player);
-            Minimax.player1Inventory.usePiece(getPieceType(bestMove.shape));
+            Minimax_AlphaBeta.player1Inventory.usePiece(getPieceType(bestMove.shape));
             System.out.println("AI placed a piece:");
             System.out.println(bestMove);
             System.out.println(toAsciiString());
@@ -65,7 +65,7 @@ public class Main {
                 Move randomMove = generateRandomMove(2); // Player 2
                 if (randomMove != null) {
                     BlockRotator3D.placeShape(randomMove.getTransformedShape(), randomMove.x, randomMove.y, randomMove.player);
-                    Minimax.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                    Minimax_AlphaBeta.player2Inventory.usePiece(getPieceType(randomMove.shape));
                     System.out.println("Random Player placed a piece:");
                     System.out.println(randomMove);
                 } else {
@@ -92,7 +92,7 @@ public class Main {
                     Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
 
                     if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
-                        Minimax.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                        Minimax_AlphaBeta.player2Inventory.usePiece(getPieceType(playerMove.shape));
                         break; // Exit the loop if the move is valid
                     } else {
                         System.out.println("Invalid move. Try again.");
@@ -109,8 +109,8 @@ public class Main {
     }
 
     public static Move generateRandomMove(int player) {
-        PieceInventory currentInventory = (player == 1) ? Minimax.player1Inventory : Minimax.player2Inventory;
-        List<Move> allPossibleMoves = Minimax.generateMoves(currentInventory, player);
+        PieceInventory currentInventory = (player == 1) ? Minimax_AlphaBeta.player1Inventory : Minimax_AlphaBeta.player2Inventory;
+        List<Move> allPossibleMoves = Minimax_AlphaBeta.generateMoves(currentInventory, player);
 
         if (allPossibleMoves.isEmpty()) {
             return null;

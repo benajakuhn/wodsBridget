@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Minimax {
+public class Minimax_AlphaBeta {
 
     private static final int MAX_DEPTH = 3; // Adjustable
     public static PieceInventory player1Inventory = new PieceInventory();
