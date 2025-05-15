@@ -1,25 +1,63 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Arrays; // Required for Arrays.deepEquals
 
 public class Minimax_History {
-
-    private static final int MAX_DEPTH = 3; // Adjustable
+    private static final int ITERATIVE_DEEPENING_TARGET_DEPTH = 3; // Adjustable target depth
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
+    // Counters for search statistics
     public static int evaluatedNodes = 0;
-    public static int prunedNodes = 0; // Counter for pruned nodes
+    public static int prunedNodes = 0;
+
+    // History table: Map<MoveKey_String, Score_Integer>
+    private static Map<String, Integer> historyTable = new HashMap<>();
+
+    private static String getMoveHistoryKey(Move move) {
+        if (move == null) {
+            System.err.println("Warning: Trying to get history key for a null move.");
+            return "invalid_null_move_key_" + System.nanoTime();
+        }
+
+        // 1. Derive pieceType
+        String pieceType = Main.getPieceType(move.shape);
+
+        // 2. Use rotationIndex directly from the move object
+        int rotationIndex = move.rotationIndex; // MODIFIED LINE
+
+        if (pieceType == null) { // Should not happen if Main.getPieceType is robust
+            System.err.println("Warning: Could not derive pieceType for move: " + move.x + "," + move.y);
+            pieceType = "UNKNOWN_PIECE";
+        }
+
+        // Handle cases where rotationIndex might not have been set (e.g. if old constructor was used)
+        // This check can be made more robust based on how you ensure rotationIndex is always set.
+        if (rotationIndex == -1 && move.rotationMatrix != null) { // Fallback if rotationIndex wasn't set
+            System.err.println("Warning: move.rotationIndex was not set, attempting to derive it for move: " + move.x + "," + move.y);
+            for (int i = 0; i < BlockRotator3D.ROTATION_MATRICES.length; i++) {
+                if (Arrays.deepEquals(move.rotationMatrix, BlockRotator3D.ROTATION_MATRICES[i])) {
+                    rotationIndex = i;
+                    break;
+                }
+            }
+        } else if (rotationIndex == -1) {
+            System.err.println("Warning: move.rotationIndex is not set and rotationMatrix is null for move: " + move.x + "," + move.y);
+            // Decide on a default or error handling strategy
+        }
+
+
+        return pieceType + "_r" + rotationIndex + "_x" + move.x + "_y" + move.y;
+    }
 
     /**
-     * Minimax algorithm with alpha-beta pruning.
-     *
-     * @param depth            The current depth in the search tree.
-     * @param maximizingPlayer True if the current player is maximizing, false otherwise.
-     * @param alpha            The best value that the maximizer currently can guarantee at that level or above.
-     * @param beta             The best value that the minimizer currently can guarantee at that level or above.
-     * @return The evaluation score for the current node.
+     * Minimax algorithm with alpha-beta pruning and history heuristic.
+     * (Javadoc remains mostly the same)
      */
-    public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta) {
+    public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta, int currentPlyFromRoot) {
         if (depth == 0 || isTerminal()) {
             return evaluate();
         }
@@ -27,100 +65,170 @@ public class Minimax_History {
         PieceInventory currentInventory = maximizingPlayer ? player1Inventory : player2Inventory;
         int currentPlayer = maximizingPlayer ? 1 : 2;
 
+        List<Move> moves = generateMoves(currentInventory, currentPlayer);
+
+        moves.sort((m1, m2) -> {
+            int score1 = historyTable.getOrDefault(getMoveHistoryKey(m1), 0);
+            int score2 = historyTable.getOrDefault(getMoveHistoryKey(m2), 0);
+            return Integer.compare(score2, score1);
+        });
+
+        Move bestMoveForThisNode = null;
+
         if (maximizingPlayer) {
             int maxEval = Integer.MIN_VALUE;
-            for (Move move : generateMoves(currentInventory, currentPlayer)) {
+            for (Move move : moves) {
                 if (tryMove(move)) {
                     evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
-                    int eval = minimax(depth - 1, false, alpha, beta);
+                    int eval = minimax(depth - 1, false, alpha, beta, currentPlyFromRoot + 1);
                     undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
-                    maxEval = Math.max(maxEval, eval);
-                    alpha = Math.max(alpha, eval); // Update alpha
-                    if (beta <= alpha) { // Pruning condition
+
+                    if (eval > maxEval) {
+                        maxEval = eval;
+                        bestMoveForThisNode = move;
+                    }
+                    alpha = Math.max(alpha, eval);
+                    if (beta <= alpha) {
                         prunedNodes++;
-                        break;
+                        String moveKey = getMoveHistoryKey(move);
+                        historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
+                        return maxEval;
                     }
                 }
+            }
+            if (bestMoveForThisNode != null) {
+                String moveKey = getMoveHistoryKey(bestMoveForThisNode);
+                historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
             }
             return maxEval;
         } else { // Minimizing player
             int minEval = Integer.MAX_VALUE;
-            for (Move move : generateMoves(currentInventory, currentPlayer)) {
+            for (Move move : moves) {
                 if (tryMove(move)) {
                     evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
-                    int eval = minimax(depth - 1, true, alpha, beta);
+                    int eval = minimax(depth - 1, true, alpha, beta, currentPlyFromRoot + 1);
                     undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
-                    minEval = Math.min(minEval, eval);
-                    beta = Math.min(beta, eval); // Update beta
-                    if (beta <= alpha) { // Pruning condition
+
+                    if (eval < minEval) {
+                        minEval = eval;
+                        bestMoveForThisNode = move;
+                    }
+                    beta = Math.min(beta, eval);
+                    if (beta <= alpha) {
                         prunedNodes++;
-                        break;
+                        String moveKey = getMoveHistoryKey(move);
+                        historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
+                        return minEval;
                     }
                 }
+            }
+            if (bestMoveForThisNode != null) {
+                String moveKey = getMoveHistoryKey(bestMoveForThisNode);
+                historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
             }
             return minEval;
         }
     }
 
+    /**
+     * Attempts to make a move on the board.
+     * Converts List<int[]> from move.getTransformedShape() to int[][]
+     * before calling BlockRotator3D.placeShape.
+     * @param move The move to try.
+     * @return True if the move was successfully made, false otherwise.
+     */
     private static boolean tryMove(Move move) {
+        List<int[]> transformedShapeList = move.getTransformedShape();
+        if (transformedShapeList == null) {
+            return false; // Or handle error appropriately
+        }
+        // Convert List<int[]> to int[][]
+       //int[][] transformedShapeArray = transformedShapeList.toArray(new int[0][0]);
+
         return BlockRotator3D.placeShape(
-                move.getTransformedShape(),
-                move.x,
-                move.y,
-                move.player
+            transformedShapeList, // Pass the converted int[][]
+            move.x,
+            move.y,
+            move.player
         );
     }
 
+    /**
+     * Undoes a move on the board.
+     * Converts List<int[]> from move.getTransformedShape() to int[][]
+     * before calling BlockRotator3D.removeShape.
+     * @param move The move to undo.
+     */
     private static void undoMove(Move move) {
+        List<int[]> transformedShapeList = move.getTransformedShape();
+        if (transformedShapeList == null) {
+            // Or handle error appropriately, perhaps log it
+            return;
+        }
+        // Convert List<int[]> to int[][]
+        //int[][] transformedShapeArray = transformedShapeList.toArray(new int[0][0]);
+
         BlockRotator3D.removeShape(
-                move.getTransformedShape(),
-                move.x,
-                move.y
+            transformedShapeList, // Pass the converted int[][]
+            move.x,
+            move.y
         );
     }
 
+    /**
+     * Generates all possible moves for the current player from their inventory.
+     * Calls the original Move constructor.
+     */
     public static List<Move> generateMoves(PieceInventory inventory, int player) {
         List<Move> moves = new ArrayList<>();
 
+        // For each piece type, get its canonical shape and iterate through valid rotations
         if (inventory.hasPiece("T")) {
-            for (int rotationIndex : BlockRotator3D.TBLOCK_ROTATION_INDICES) {
-                addMoves(moves, Main.tBlockShape, rotationIndex, player);
+            int[][] shape = Main.tBlockShape;
+            for (int rotationIndex : BlockRotator3D.TBLOCK_ROTATION_INDICES) { // rotationIndex is available here
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
             }
         }
         if (inventory.hasPiece("L")) {
-            for (int rotationIndex : BlockRotator3D.LBLOCK_ROTATION_INDICES) {
-                addMoves(moves, Main.lBlockShape, rotationIndex, player);
+            int[][] shape = Main.lBlockShape;
+            for (int rotationIndex : BlockRotator3D.LBLOCK_ROTATION_INDICES) { // rotationIndex is available here
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
             }
         }
         if (inventory.hasPiece("Z")) {
-            for (int rotationIndex : BlockRotator3D.ZBLOCK_ROTATION_INDICES) {
-                addMoves(moves, Main.zBlockShape, rotationIndex, player);
+            int[][] shape = Main.zBlockShape;
+            for (int rotationIndex : BlockRotator3D.ZBLOCK_ROTATION_INDICES) { // rotationIndex is available here
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
             }
         }
         if (inventory.hasPiece("O")) {
-            for (int rotationIndex : BlockRotator3D.OBLOCK_ROTATION_INDICES) {
-                addMoves(moves, Main.oBlockShape, rotationIndex, player);
+            int[][] shape = Main.oBlockShape;
+            for (int rotationIndex : BlockRotator3D.OBLOCK_ROTATION_INDICES) { // rotationIndex is available here
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
             }
         }
-
         return moves;
     }
 
-    private static void addMoves(List<Move> moves, int[][] shape, int rotationIndex, int player) {
-        int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
+    /**
+     * Helper method to add all possible placements for a given piece shape and rotation.
+     * Calls the original Move constructor.
+     */
+    private static void addMoves(List<Move> moves, int[][] originalShape, int[][] rotationMatrix, int player, int rotationIndex) { // MODIFIED SIGNATURE
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                moves.add(new Move(shape, rotationMatrix, x, y, player));
+                // Calls the constructor of the external Move class that includes rotationIndex:
+                // public Move(int rotationIndex, int[][] shape, int[][] rotationMatrix, int x, int y, int player)
+                moves.add(new Move(rotationIndex, originalShape, rotationMatrix, x, y, player)); // MODIFIED LINE
             }
         }
     }
 
     private static boolean isTerminal() {
-        // If both players have no pieces left, the game is over
         return player1Inventory.isEmpty() && player2Inventory.isEmpty();
     }
 
@@ -138,68 +246,84 @@ public class Minimax_History {
     }
 
     public static Move findBestMove() {
-        long startTime = System.nanoTime();
-        evaluatedNodes = 0; // Reset counters for each call
+        long overallStartTime = System.nanoTime();
+        evaluatedNodes = 0;
         prunedNodes = 0;
+        historyTable.clear();
 
-        int bestValue = Integer.MIN_VALUE;
-        Move bestMove = null;
+        Move overallBestMove = null;
+        int overallBestValue = Integer.MIN_VALUE;
 
-        PieceInventory currentInventory = player1Inventory; // Assuming Player 1 (AI) is maximizing
-        int currentPlayer = 1;
+        System.out.println("Starting Iterative Deepening Search...");
 
-        List<Move> moves = generateMoves(currentInventory, currentPlayer);
-        int totalMoves = moves.size();
-        int currentMoveIndex = 0;
+        for (int currentDepthIteration = 1; currentDepthIteration <= ITERATIVE_DEEPENING_TARGET_DEPTH; currentDepthIteration++) {
+            long iterationStartTime = System.nanoTime();
+            System.out.println("\n--- Iteration Depth: " + currentDepthIteration + " ---");
 
-        for (Move move : moves) {
-            currentMoveIndex++;
+            int iterationBestValue = Integer.MIN_VALUE;
+            Move iterationBestMove = null;
 
-            if (tryMove(move)) {
-                evaluatedNodes++;
-                currentInventory.usePiece(Main.getPieceType(move.shape));
-                // Initial call to minimax with alpha = Integer.MIN_VALUE and beta = Integer.MAX_VALUE
-                int moveValue = minimax(MAX_DEPTH - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
-                undoMove(move);
-                currentInventory.returnPiece(Main.getPieceType(move.shape));
+            PieceInventory currentInventory = player1Inventory;
+            int currentPlayer = 1;
 
-                if (moveValue > bestValue) {
-                    bestValue = moveValue;
-                    bestMove = move;
+            List<Move> moves = generateMoves(currentInventory, currentPlayer);
+            moves.sort((m1, m2) -> {
+                int score1 = historyTable.getOrDefault(getMoveHistoryKey(m1), 0);
+                int score2 = historyTable.getOrDefault(getMoveHistoryKey(m2), 0);
+                return Integer.compare(score2, score1);
+            });
+
+            int totalMovesAtThisLevel = moves.size();
+            int currentMoveIndex = 0;
+
+            for (Move move : moves) {
+                currentMoveIndex++;
+                if (tryMove(move)) {
+                    currentInventory.usePiece(Main.getPieceType(move.shape));
+                    int moveValue = minimax(currentDepthIteration - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
+                    undoMove(move);
+                    currentInventory.returnPiece(Main.getPieceType(move.shape));
+
+                    if (moveValue > iterationBestValue) {
+                        iterationBestValue = moveValue;
+                        iterationBestMove = move;
+                    }
+                }
+                if (totalMovesAtThisLevel > 0) {
+                    int progress = (currentMoveIndex * 100) / totalMovesAtThisLevel;
+                    System.out.print("\rDepth " + currentDepthIteration + " Progress: [" + String.join("", Collections.nCopies(progress / 2, "=")) + String.join("", Collections.nCopies(50 - progress / 2, " ")) + "] " + progress + "%");
                 }
             }
+            System.out.println();
 
-            // Progress bar
-            int progress = (int) ((currentMoveIndex / (double) totalMoves) * 100);
-            StringBuilder progressBar = new StringBuilder("[");
-            int barLength = 50; // Adjust the bar length here
-            int filledLength = (int) (barLength * progress / 100.0);
-            for (int i = 0; i < barLength; i++) {
-                if (i < filledLength) {
-                    progressBar.append("=");
-                } else {
-                    progressBar.append(" ");
-                }
+            if (iterationBestMove != null) {
+                overallBestMove = iterationBestMove;
+                overallBestValue = iterationBestValue;
+                System.out.println("Depth " + currentDepthIteration + ": Best move found: " + iterationBestMove + " with value: " + iterationBestValue);
+            } else {
+                System.out.println("Depth " + currentDepthIteration + ": No valid moves found or all pruned at this depth.");
             }
-            progressBar.append("] ").append(progress).append("%");
+            // Print the first few elements of the history table
+            System.out.println("History Table (first few entries):");
+            historyTable.entrySet().stream()
+                .forEach(entry -> System.out.println(entry.getKey() + " -> " + entry.getValue()));
 
-            System.out.print("\r" + progressBar.toString());
+            long iterationEndTime = System.nanoTime();
+            System.out.println("Depth " + currentDepthIteration + " time: " + (iterationEndTime - iterationStartTime) / 1_000_000 + " ms");
+            System.out.println("Cumulative Evaluated Nodes: " + evaluatedNodes + ", Pruned Branches: " + prunedNodes);
         }
-        System.out.println(); // Move to next line after progress bar is complete
 
-        System.out.println("Evaluated nodes at Depth " + MAX_DEPTH + ": " + evaluatedNodes);
-        System.out.println("Pruned branches: " + prunedNodes);
+        System.out.println("\n--- Iterative Deepening Search Complete ---");
+        long overallEndTime = System.nanoTime();
+        System.out.println("Total execution time: " + (overallEndTime - overallStartTime) / 1_000_000 + " ms");
+        System.out.println("Total Evaluated nodes: " + evaluatedNodes);
+        System.out.println("Total Pruned branches: " + prunedNodes);
 
-
-        long endTime = System.nanoTime(); // End time measurement
-        long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
-        System.out.println("Execution time: " + duration + " ms");
-
-        if (bestMove != null) {
-            System.out.println("Best move found: " + bestMove + " with value: " + bestValue);
+        if (overallBestMove != null) {
+            System.out.println("Overall Best move found: " + overallBestMove + " with value: " + overallBestValue);
         } else {
-            System.out.println("No best move found (possibly no valid moves).");
+            System.out.println("No best move found across all iterations.");
         }
-        return bestMove;
+        return overallBestMove;
     }
 }
