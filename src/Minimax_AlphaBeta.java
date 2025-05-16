@@ -3,23 +3,14 @@ import java.util.List;
 
 public class Minimax_AlphaBeta {
 
-    private static final int MAX_DEPTH = 3; // Adjustable
+    private static final int MAX_DEPTH = 2; // Adjustable
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
     public static int evaluatedNodes = 0;
     public static int prunedNodes = 0; // Counter for pruned nodes
 
-    /**
-     * Minimax algorithm with alpha-beta pruning.
-     *
-     * @param depth            The current depth in the search tree.
-     * @param maximizingPlayer True if the current player is maximizing, false otherwise.
-     * @param alpha            The best value that the maximizer currently can guarantee at that level or above.
-     * @param beta             The best value that the minimizer currently can guarantee at that level or above.
-     * @param maxPlayerNumber  The player number (1 or 2) that is maximizing.
-     * @return The evaluation score for the current node.
-     */
+
     public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta, int maxPlayerNumber) {
         if (depth == 0 || isTerminal()) {
             return evaluate(maxPlayerNumber);
