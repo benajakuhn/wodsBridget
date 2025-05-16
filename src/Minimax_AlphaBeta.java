@@ -4,6 +4,7 @@ import java.util.List;
 public class Minimax_AlphaBeta {
 
     private static final int MAX_DEPTH = 2; // Adjustable
+    private static final int currentPlayer = 2;
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -137,7 +138,7 @@ public class Minimax_AlphaBeta {
         }
     }
 
-    public static Move findBestMove(int currentPlayer) {
+    public static Move findBestMove() {
         long startTime = System.nanoTime();
         evaluatedNodes = 0; // Reset counters for each call
         prunedNodes = 0;
@@ -158,7 +159,7 @@ public class Minimax_AlphaBeta {
                 evaluatedNodes++;
                 currentInventory.usePiece(Main.getPieceType(move.shape));
                 // Initial call to minimax with alpha = Integer.MIN_VALUE and beta = Integer.MAX_VALUE
-                int moveValue = minimax(MAX_DEPTH - 1, currentPlayer == 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                int moveValue = minimax(MAX_DEPTH - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
                 undoMove(move);
                 currentInventory.returnPiece(Main.getPieceType(move.shape));
 
@@ -167,22 +168,6 @@ public class Minimax_AlphaBeta {
                     bestMove = move;
                 }
             }
-
-            // Progress bar
-           /* int progress = (int) ((currentMoveIndex / (double) totalMoves) * 100);
-            StringBuilder progressBar = new StringBuilder("[");
-            int barLength = 50; // Adjust the bar length here
-            int filledLength = (int) (barLength * progress / 100.0);
-            for (int i = 0; i < barLength; i++) {
-                if (i < filledLength) {
-                    progressBar.append("=");
-                } else {
-                    progressBar.append(" ");
-                }
-            }
-            progressBar.append("] ").append(progress).append("%");
-
-            System.out.print("\r" + progressBar.toString());*/
         }
         System.out.println(); // Move to next line after progress bar is complete
 
