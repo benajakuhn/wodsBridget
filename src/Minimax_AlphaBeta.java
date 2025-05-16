@@ -4,7 +4,6 @@ import java.util.List;
 public class Minimax_AlphaBeta {
 
     private static final int MAX_DEPTH = 2; // Adjustable
-    private static final int currentPlayer = 2;
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -18,23 +17,24 @@ public class Minimax_AlphaBeta {
      * @param maximizingPlayer True if the current player is maximizing, false otherwise.
      * @param alpha            The best value that the maximizer currently can guarantee at that level or above.
      * @param beta             The best value that the minimizer currently can guarantee at that level or above.
+     * @param maxPlayerNumber  The player number (1 or 2) that is maximizing.
      * @return The evaluation score for the current node.
      */
-    public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta) {
+    public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta, int maxPlayerNumber) {
         if (depth == 0 || isTerminal()) {
-            return evaluate();
+            return evaluate(maxPlayerNumber);
         }
 
-        PieceInventory currentInventory = maximizingPlayer ? player1Inventory : player2Inventory;
-        int currentPlayer = maximizingPlayer ? 1 : 2;
+        int currentPlayerNumber = maximizingPlayer ? maxPlayerNumber : (maxPlayerNumber == 1 ? 2 : 1);
+        PieceInventory currentInventory = currentPlayerNumber == 1 ? player1Inventory : player2Inventory;
 
         if (maximizingPlayer) {
             int maxEval = Integer.MIN_VALUE;
-            for (Move move : generateMoves(currentInventory, currentPlayer)) {
+            for (Move move : generateMoves(currentInventory, currentPlayerNumber)) {
                 if (tryMove(move)) {
                     evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
-                    int eval = minimax(depth - 1, false, alpha, beta);
+                    int eval = minimax(depth - 1, false, alpha, beta, maxPlayerNumber);
                     undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
                     maxEval = Math.max(maxEval, eval);
@@ -48,11 +48,11 @@ public class Minimax_AlphaBeta {
             return maxEval;
         } else { // Minimizing player
             int minEval = Integer.MAX_VALUE;
-            for (Move move : generateMoves(currentInventory, currentPlayer)) {
+            for (Move move : generateMoves(currentInventory, currentPlayerNumber)) {
                 if (tryMove(move)) {
                     evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
-                    int eval = minimax(depth - 1, true, alpha, beta);
+                    int eval = minimax(depth - 1, true, alpha, beta, maxPlayerNumber);
                     undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
                     minEval = Math.min(minEval, eval);
@@ -125,9 +125,10 @@ public class Minimax_AlphaBeta {
         return player1Inventory.isEmpty() && player2Inventory.isEmpty();
     }
 
-    private static int evaluate() {
-        GameChecker.Result maxPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 1);
-        GameChecker.Result minPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 2);
+    private static int evaluate(int maxPlayerNumber) {
+        int minPlayerNumber = maxPlayerNumber == 1 ? 2 : 1;
+        GameChecker.Result maxPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), maxPlayerNumber);
+        GameChecker.Result minPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), minPlayerNumber);
 
         if (maxPlayerResult.hasWon) {
             return 1000;
@@ -138,7 +139,7 @@ public class Minimax_AlphaBeta {
         }
     }
 
-    public static Move findBestMove() {
+    public static Move findBestMove(int playerNumber) {
         long startTime = System.nanoTime();
         evaluatedNodes = 0; // Reset counters for each call
         prunedNodes = 0;
@@ -146,9 +147,9 @@ public class Minimax_AlphaBeta {
         int bestValue = Integer.MIN_VALUE;
         Move bestMove = null;
 
-        PieceInventory currentInventory = player1Inventory; // Assuming Player 1 (AI) is maximizing
+        PieceInventory currentInventory = playerNumber == 1 ? player1Inventory : player2Inventory;
 
-        List<Move> moves = generateMoves(currentInventory, currentPlayer);
+        List<Move> moves = generateMoves(currentInventory, playerNumber);
         int totalMoves = moves.size();
         int currentMoveIndex = 0;
 
@@ -159,7 +160,8 @@ public class Minimax_AlphaBeta {
                 evaluatedNodes++;
                 currentInventory.usePiece(Main.getPieceType(move.shape));
                 // Initial call to minimax with alpha = Integer.MIN_VALUE and beta = Integer.MAX_VALUE
-                int moveValue = minimax(MAX_DEPTH - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                // Opponent is minimizing
+                int moveValue = minimax(MAX_DEPTH - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE, playerNumber);
                 undoMove(move);
                 currentInventory.returnPiece(Main.getPieceType(move.shape));
 
@@ -174,15 +176,14 @@ public class Minimax_AlphaBeta {
         System.out.println("Evaluated nodes at Depth " + MAX_DEPTH + ": " + evaluatedNodes);
         System.out.println("Pruned branches: " + prunedNodes);
 
-
         long endTime = System.nanoTime(); // End time measurement
         long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
         System.out.println("Execution time: " + duration + " ms");
 
         if (bestMove != null) {
-            System.out.println("Best move found: " + bestMove + " with value: " + bestValue);
+            System.out.println("Best move found for Player " + playerNumber + ": " + bestMove + " with value: " + bestValue);
         } else {
-            System.out.println("No best move found (possibly no valid moves).");
+            System.out.println("No best move found for Player " + playerNumber + " (possibly no valid moves).");
         }
         return bestMove;
     }
