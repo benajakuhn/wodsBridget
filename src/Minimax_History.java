@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Arrays; // Required for Arrays.deepEquals
 
 public class Minimax_History {
-    private static final int ITERATIVE_DEEPENING_TARGET_DEPTH = 3; // Adjustable target depth
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -188,9 +187,11 @@ public class Minimax_History {
         Move overallBestMove = null;
         int overallBestValue = Integer.MIN_VALUE;
 
+        final long TIME_LIMIT_MS = 60000;
+
         System.out.println("Starting Iterative Deepening Search...");
 
-        for (int currentDepthIteration = 1; currentDepthIteration <= ITERATIVE_DEEPENING_TARGET_DEPTH; currentDepthIteration++) {
+        for (int currentDepthIteration = 1; ((System.nanoTime() - overallStartTime) / 1_000_000) <= TIME_LIMIT_MS; currentDepthIteration++) {
             long iterationStartTime = System.nanoTime();
             System.out.println("\n--- Iteration Depth: " + currentDepthIteration + " ---");
 
@@ -211,6 +212,11 @@ public class Minimax_History {
             int currentMoveIndex = 0;
 
             for (Move move : moves) {
+                // Stop if the time limit is reached
+                if (((System.nanoTime() - overallStartTime) / 1_000_000) >= TIME_LIMIT_MS) {
+                    break;
+                }
+
                 currentMoveIndex++;
                 if (tryMove(move)) {
                     currentInventory.usePiece(Main.getPieceType(move.shape));
@@ -223,20 +229,16 @@ public class Minimax_History {
                         iterationBestMove = move;
                     }
                 }
-                if (totalMovesAtThisLevel > 0) {
-                    int progress = (currentMoveIndex * 100) / totalMovesAtThisLevel;
-                    System.out.print("\rDepth " + currentDepthIteration + " Progress: [" + String.join("", Collections.nCopies(progress / 2, "=")) + String.join("", Collections.nCopies(50 - progress / 2, " ")) + "] " + progress + "%");
-                }
+                int progress = (currentMoveIndex * 100) / totalMovesAtThisLevel;
+                System.out.print("\rDepth " + currentDepthIteration + " Progress: [" + String.join("", Collections.nCopies(progress / 2, "=")) + String.join("", Collections.nCopies(50 - progress / 2, " ")) + "] " + progress + "%");
             }
             System.out.println();
 
-            if (iterationBestMove != null) {
-                overallBestMove = iterationBestMove;
-                overallBestValue = iterationBestValue;
-                System.out.println("Depth " + currentDepthIteration + ": Best move found: " + iterationBestMove + " with value: " + iterationBestValue);
-            } else {
-                System.out.println("Depth " + currentDepthIteration + ": No valid moves found or all pruned at this depth.");
-            }
+            // Print iteration best move and update the overall best move
+            overallBestMove = iterationBestMove;
+            overallBestValue = iterationBestValue;
+            System.out.println("Depth " + currentDepthIteration + ": Best move found: " + iterationBestMove + " with value: " + iterationBestValue);
+
             // Print the first few elements of the history table
             System.out.println("History Table (first few entries):");
             historyTable.entrySet().stream()
