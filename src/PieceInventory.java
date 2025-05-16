@@ -27,4 +27,8 @@ public class PieceInventory {
     public boolean isEmpty() {
         return pieces.values().stream().allMatch(count -> count == 0);
     }
+
+    public int getPieceCount(String type) {
+        return pieces.getOrDefault(type, 0);
+    }
 }

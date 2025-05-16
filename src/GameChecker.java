@@ -5,6 +5,11 @@ public class GameChecker {
     private static final int[] DX = {0, 0, 1, -1}; // Right, Left, Down, Up
     private static final int[] DY = {1, -1, 0, 0};
 
+    private static final int L_PIECE_VALUE = 8;
+    private static final int T_PIECE_PRESENCE_VALUE = 5;
+    private static final int Z_PIECE_PRESENCE_VALUE = 5;
+    private static final int O_PIECE_PRESENCE_VALUE = 5;
+
     public static class Result {
         boolean hasWon;
         int longestPath;
@@ -33,6 +38,25 @@ public class GameChecker {
         }
 
         return result;
+    }
+
+    public static int calculateInventoryScore(PieceInventory inventory) {
+        int score = 0;
+
+        // Score for L pieces (quantity matters)
+        score += inventory.getPieceCount("L") * L_PIECE_VALUE;
+
+        // Score for presence of other pieces (diversity matters)
+        if (inventory.getPieceCount("T") > 0) {
+            score += T_PIECE_PRESENCE_VALUE;
+        }
+        if (inventory.getPieceCount("Z") > 0) {
+            score += Z_PIECE_PRESENCE_VALUE;
+        }
+        if (inventory.getPieceCount("O") > 0) {
+            score += O_PIECE_PRESENCE_VALUE;
+        }
+        return score;
     }
 
     private static void dfs(int[][] board, boolean[][] visited, int x, int y, int player, boolean horizontal, int currentLength, Result result) {

@@ -153,7 +153,7 @@ public class Minimax_History {
         return moves;
     }
 
-    private static void addMoves(List<Move> moves, int[][] originalShape, int[][] rotationMatrix, int player, int rotationIndex) { // MODIFIED SIGNATURE
+    private static void addMoves(List<Move> moves, int[][] originalShape, int[][] rotationMatrix, int player, int rotationIndex) {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 moves.add(new Move(rotationIndex, originalShape, rotationMatrix, x, y, player));
@@ -174,7 +174,9 @@ public class Minimax_History {
         } else if (minPlayerResult.hasWon) {
             return -1000;
         } else {
-            return maxPlayerResult.longestPath - minPlayerResult.longestPath;
+            int score = GameChecker.calculateInventoryScore(player1Inventory) - GameChecker.calculateInventoryScore(player2Inventory);
+            score += ((maxPlayerResult.longestPath - minPlayerResult.longestPath)*10);
+            return score;
         }
     }
 
