@@ -18,45 +18,12 @@ public class Minimax_History {
     private static Map<String, Integer> historyTable = new HashMap<>();
 
     private static String getMoveHistoryKey(Move move) {
-        if (move == null) {
-            System.err.println("Warning: Trying to get history key for a null move.");
-            return "invalid_null_move_key_" + System.nanoTime();
-        }
-
-        // 1. Derive pieceType
         String pieceType = Main.getPieceType(move.shape);
-
-        // 2. Use rotationIndex directly from the move object
-        int rotationIndex = move.rotationIndex; // MODIFIED LINE
-
-        if (pieceType == null) { // Should not happen if Main.getPieceType is robust
-            System.err.println("Warning: Could not derive pieceType for move: " + move.x + "," + move.y);
-            pieceType = "UNKNOWN_PIECE";
-        }
-
-        // Handle cases where rotationIndex might not have been set (e.g. if old constructor was used)
-        // This check can be made more robust based on how you ensure rotationIndex is always set.
-        if (rotationIndex == -1 && move.rotationMatrix != null) { // Fallback if rotationIndex wasn't set
-            System.err.println("Warning: move.rotationIndex was not set, attempting to derive it for move: " + move.x + "," + move.y);
-            for (int i = 0; i < BlockRotator3D.ROTATION_MATRICES.length; i++) {
-                if (Arrays.deepEquals(move.rotationMatrix, BlockRotator3D.ROTATION_MATRICES[i])) {
-                    rotationIndex = i;
-                    break;
-                }
-            }
-        } else if (rotationIndex == -1) {
-            System.err.println("Warning: move.rotationIndex is not set and rotationMatrix is null for move: " + move.x + "," + move.y);
-            // Decide on a default or error handling strategy
-        }
-
-
+        int rotationIndex = move.rotationIndex;
         return pieceType + "_r" + rotationIndex + "_x" + move.x + "_y" + move.y;
     }
 
-    /**
-     * Minimax algorithm with alpha-beta pruning and history heuristic.
-     * (Javadoc remains mostly the same)
-     */
+
     public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta, int currentPlyFromRoot) {
         if (depth == 0 || isTerminal()) {
             return evaluate();
@@ -134,43 +101,20 @@ public class Minimax_History {
         }
     }
 
-    /**
-     * Attempts to make a move on the board.
-     * Converts List<int[]> from move.getTransformedShape() to int[][]
-     * before calling BlockRotator3D.placeShape.
-     * @param move The move to try.
-     * @return True if the move was successfully made, false otherwise.
-     */
+
     private static boolean tryMove(Move move) {
         List<int[]> transformedShapeList = move.getTransformedShape();
-        if (transformedShapeList == null) {
-            return false; // Or handle error appropriately
-        }
-        // Convert List<int[]> to int[][]
-       //int[][] transformedShapeArray = transformedShapeList.toArray(new int[0][0]);
 
         return BlockRotator3D.placeShape(
-            transformedShapeList, // Pass the converted int[][]
+            transformedShapeList,
             move.x,
             move.y,
             move.player
         );
     }
 
-    /**
-     * Undoes a move on the board.
-     * Converts List<int[]> from move.getTransformedShape() to int[][]
-     * before calling BlockRotator3D.removeShape.
-     * @param move The move to undo.
-     */
     private static void undoMove(Move move) {
         List<int[]> transformedShapeList = move.getTransformedShape();
-        if (transformedShapeList == null) {
-            // Or handle error appropriately, perhaps log it
-            return;
-        }
-        // Convert List<int[]> to int[][]
-        //int[][] transformedShapeArray = transformedShapeList.toArray(new int[0][0]);
 
         BlockRotator3D.removeShape(
             transformedShapeList, // Pass the converted int[][]
@@ -179,51 +123,41 @@ public class Minimax_History {
         );
     }
 
-    /**
-     * Generates all possible moves for the current player from their inventory.
-     * Calls the original Move constructor.
-     */
+
     public static List<Move> generateMoves(PieceInventory inventory, int player) {
         List<Move> moves = new ArrayList<>();
 
-        // For each piece type, get its canonical shape and iterate through valid rotations
         if (inventory.hasPiece("T")) {
             int[][] shape = Main.tBlockShape;
-            for (int rotationIndex : BlockRotator3D.TBLOCK_ROTATION_INDICES) { // rotationIndex is available here
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
+            for (int rotationIndex : BlockRotator3D.TBLOCK_ROTATION_INDICES) {
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
             }
         }
         if (inventory.hasPiece("L")) {
             int[][] shape = Main.lBlockShape;
-            for (int rotationIndex : BlockRotator3D.LBLOCK_ROTATION_INDICES) { // rotationIndex is available here
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
+            for (int rotationIndex : BlockRotator3D.LBLOCK_ROTATION_INDICES) {
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
             }
         }
         if (inventory.hasPiece("Z")) {
             int[][] shape = Main.zBlockShape;
-            for (int rotationIndex : BlockRotator3D.ZBLOCK_ROTATION_INDICES) { // rotationIndex is available here
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
+            for (int rotationIndex : BlockRotator3D.ZBLOCK_ROTATION_INDICES) {
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
             }
         }
         if (inventory.hasPiece("O")) {
             int[][] shape = Main.oBlockShape;
-            for (int rotationIndex : BlockRotator3D.OBLOCK_ROTATION_INDICES) { // rotationIndex is available here
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex); // MODIFIED LINE
+            for (int rotationIndex : BlockRotator3D.OBLOCK_ROTATION_INDICES) {
+                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
             }
         }
         return moves;
     }
 
-    /**
-     * Helper method to add all possible placements for a given piece shape and rotation.
-     * Calls the original Move constructor.
-     */
     private static void addMoves(List<Move> moves, int[][] originalShape, int[][] rotationMatrix, int player, int rotationIndex) { // MODIFIED SIGNATURE
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                // Calls the constructor of the external Move class that includes rotationIndex:
-                // public Move(int rotationIndex, int[][] shape, int[][] rotationMatrix, int x, int y, int player)
-                moves.add(new Move(rotationIndex, originalShape, rotationMatrix, x, y, player)); // MODIFIED LINE
+                moves.add(new Move(rotationIndex, originalShape, rotationMatrix, x, y, player));
             }
         }
     }
