@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Minimax_AlphaBeta {
 
-    private static final int MAX_DEPTH = 3; // Adjustable
+    private static final int MAX_DEPTH = 2; // Adjustable
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -170,7 +170,7 @@ public class Minimax_AlphaBeta {
             }
 
             // Progress bar
-            int progress = (int) ((currentMoveIndex / (double) totalMoves) * 100);
+           /* int progress = (int) ((currentMoveIndex / (double) totalMoves) * 100);
             StringBuilder progressBar = new StringBuilder("[");
             int barLength = 50; // Adjust the bar length here
             int filledLength = (int) (barLength * progress / 100.0);
@@ -183,7 +183,7 @@ public class Minimax_AlphaBeta {
             }
             progressBar.append("] ").append(progress).append("%");
 
-            System.out.print("\r" + progressBar.toString());
+            System.out.print("\r" + progressBar.toString());*/
         }
         System.out.println(); // Move to next line after progress bar is complete
 
