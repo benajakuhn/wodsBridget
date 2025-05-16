@@ -137,7 +137,7 @@ public class Minimax_AlphaBeta {
         }
     }
 
-    public static Move findBestMove() {
+    public static Move findBestMove(int currentPlayer) {
         long startTime = System.nanoTime();
         evaluatedNodes = 0; // Reset counters for each call
         prunedNodes = 0;
@@ -146,7 +146,6 @@ public class Minimax_AlphaBeta {
         Move bestMove = null;
 
         PieceInventory currentInventory = player1Inventory; // Assuming Player 1 (AI) is maximizing
-        int currentPlayer = 1;
 
         List<Move> moves = generateMoves(currentInventory, currentPlayer);
         int totalMoves = moves.size();
@@ -159,7 +158,7 @@ public class Minimax_AlphaBeta {
                 evaluatedNodes++;
                 currentInventory.usePiece(Main.getPieceType(move.shape));
                 // Initial call to minimax with alpha = Integer.MIN_VALUE and beta = Integer.MAX_VALUE
-                int moveValue = minimax(MAX_DEPTH - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                int moveValue = minimax(MAX_DEPTH - 1, currentPlayer == 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
                 undoMove(move);
                 currentInventory.returnPiece(Main.getPieceType(move.shape));
 

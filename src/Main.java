@@ -62,7 +62,7 @@ public class Main {
             // Min Player (Human) Move
             if (IS_RANDOM_PLAYER_ACTIVE) {
                 System.out.println("Random Player's turn. Thinking...");
-                Move randomMove = Minimax_AlphaBeta.findBestMove(); // Player 2
+                Move randomMove = Minimax_AlphaBeta.findBestMove(2); // Player 2
                 if (randomMove != null) {
                     BlockRotator3D.placeShape(randomMove.getTransformedShape(), randomMove.x, randomMove.y, randomMove.player);
                     Minimax_History.player2Inventory.usePiece(getPieceType(randomMove.shape));
