@@ -229,8 +229,9 @@ public class Minimax_History {
                         iterationBestMove = move;
                     }
                 }
-                int progress = (currentMoveIndex * 100) / totalMovesAtThisLevel;
-                System.out.print("\rDepth " + currentDepthIteration + " Progress: [" + String.join("", Collections.nCopies(progress / 2, "=")) + String.join("", Collections.nCopies(50 - progress / 2, " ")) + "] " + progress + "%");
+
+                //int progress = (currentMoveIndex * 100) / totalMovesAtThisLevel;
+               // System.out.print("\rDepth " + currentDepthIteration + " Progress: [" + String.join("", Collections.nCopies(progress / 2, "=")) + String.join("", Collections.nCopies(50 - progress / 2, " ")) + "] " + progress + "%");
             }
             System.out.println();
 
