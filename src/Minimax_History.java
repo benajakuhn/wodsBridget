@@ -174,7 +174,7 @@ public class Minimax_History {
         } else if (minPlayerResult.hasWon) {
             return -1000;
         } else {
-            int score = GameChecker.calculateInventoryScore(player1Inventory) - GameChecker.calculateInventoryScore(player2Inventory);
+            int score = player1Inventory.calculateInventoryScore() - player2Inventory.calculateInventoryScore();
             score += ((maxPlayerResult.longestPath - minPlayerResult.longestPath)*10);
             return score;
         }
