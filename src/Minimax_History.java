@@ -1,9 +1,7 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays; // Required for Arrays.deepEquals
 
 public class Minimax_History {
     public static PieceInventory player1Inventory = new PieceInventory();
@@ -189,7 +187,7 @@ public class Minimax_History {
         Move overallBestMove = null;
         int overallBestValue = Integer.MIN_VALUE;
 
-        final long TIME_LIMIT_MS = 60000;
+        final long TIME_LIMIT_MS = 120000;
 
         System.out.println("Starting Iterative Deepening Search...");
 
