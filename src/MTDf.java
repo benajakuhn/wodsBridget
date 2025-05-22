@@ -69,7 +69,7 @@ public class MTDf {
         int originalAlpha = alpha; // For TT bound type determination
 
         // Transposition Table Lookup
-        Long gameStateKey = getGameStateKey(); // Placeholder for actual game state hash
+        Long gameStateKey = getGameStateKey();
         TTEntry ttEntry = transpositionTable.get(gameStateKey);
         if (ttEntry != null && ttEntry.depth >= depth) {
             ttHits++;
@@ -99,13 +99,11 @@ public class MTDf {
 
         // Move Ordering (TT move first, then history heuristic)
         if (ttEntry != null && ttEntry.bestMove != null) {
-            // Try TT move first by moving it to the front of the list
-            // This requires Move to have a proper equals/hashCode or find by properties
-            if(moves.remove(ttEntry.bestMove)) { // This equality check might be tricky
+            if(moves.remove(ttEntry.bestMove)) {
                 moves.add(0, ttEntry.bestMove);
             }
         }
-        // Sort by history heuristic (higher scores first)
+
         moves.sort((m1, m2) -> {
             int score1 = historyTable.getOrDefault(GameUtils.getMoveHistoryKey(m1), 0);
             int score2 = historyTable.getOrDefault(GameUtils.getMoveHistoryKey(m2), 0);
@@ -116,21 +114,20 @@ public class MTDf {
         if (maximizingPlayer) {
             int maxEval = NEGATIVE_INFINITY;
             for (Move move : moves) {
-                if (GameUtils.tryMove(move)) { // Assuming tryMove
-                    currentInventory.usePiece(Main.getPieceType(move.shape)); // Assuming usePiece
+                if (GameUtils.tryMove(move)) {
+                    currentInventory.usePiece(Main.getPieceType(move.shape));
 
                     MT_Result result = memoryEnhancedTest(depth - 1, false, alpha, beta, ply + 1);
 
-                    GameUtils.undoMove(move); // Assuming undoMove
-                    currentInventory.returnPiece(Main.getPieceType(move.shape)); // Assuming returnPiece
+                    GameUtils.undoMove(move);
+                    currentInventory.returnPiece(Main.getPieceType(move.shape));
 
                     if (result.score > maxEval) {
                         maxEval = result.score;
                         bestMoveForThisNode = move;
                     }
                     alpha = Math.max(alpha, maxEval);
-                    if (beta <= alpha) { // Beta cutoff
-                        // Update history table for the move that caused cutoff
+                    if (beta <= alpha) {
                         String moveKey = GameUtils.getMoveHistoryKey(move);
                         historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (1 << depth)); // Depth-weighted
                         break;
