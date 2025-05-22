@@ -35,7 +35,7 @@ public class Main {
     };
 
     public static boolean IS_RANDOM_PLAYER_ACTIVE = true;
-    private static final String DEFAULT_AI_ALGORITHM = "HISTORY"; // Default algorithm
+    private static final String DEFAULT_AI_ALGORITHM = "MTDF"; // Default algorithm
     private static final int MTDF_MAX_DEPTH = 5; // Example default for MTDf
     private static final long TIME_LIMIT_MS = 30000; // Example default for MTDf
     private static final int MTDF_INITIAL_GUESS = 0; // Example default for MTDf
@@ -91,6 +91,8 @@ public class Main {
 
             if (aiAlgorithm.equals("MINIMAX")) {
                 Minimax_AlphaBeta.player1Inventory.usePiece(getPieceType(bestMove.shape));
+            } else if (aiAlgorithm.equals("MTDF")) {
+                MTDf.player1Inventory.usePiece(getPieceType(bestMove.shape));
             } else {
                 Minimax_History.player1Inventory.usePiece(getPieceType(bestMove.shape));
             }
