@@ -1,4 +1,6 @@
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Move {
     public int[][] shape;
@@ -27,6 +29,25 @@ public class Move {
 
     public List<int[]> getTransformedShape() {
         return BlockRotator3D.applyRotation(shape, rotationMatrix);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return x == move.x &&
+            y == move.y &&
+            player == move.player &&
+            rotationIndex == move.rotationIndex &&
+            Arrays.deepEquals(shape, move.shape);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(x, y, player, rotationIndex);
+        result = 31 * result + Arrays.deepHashCode(shape);
+        return result;
     }
 
     @Override
