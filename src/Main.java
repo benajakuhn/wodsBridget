@@ -110,7 +110,7 @@ public class Main {
 
     public static Move generateRandomMove(int player) {
         PieceInventory currentInventory = (player == 1) ? Minimax_History.player1Inventory : Minimax_History.player2Inventory;
-        List<Move> allPossibleMoves = Minimax_History.generateMoves(currentInventory, player);
+        List<Move> allPossibleMoves = GameUtils.generateMoves(currentInventory, player);
 
         if (allPossibleMoves.isEmpty()) {
             return null;

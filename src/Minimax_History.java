@@ -14,26 +14,20 @@ public class Minimax_History {
     // History table: Map<MoveKey_String, Score_Integer>
     private static Map<String, Integer> historyTable = new HashMap<>();
 
-    private static String getMoveHistoryKey(Move move) {
-        String pieceType = Main.getPieceType(move.shape);
-        int rotationIndex = move.rotationIndex;
-        return pieceType + "_r" + rotationIndex + "_x" + move.x + "_y" + move.y;
-    }
-
 
     public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta, int currentPlyFromRoot) {
-        if (depth == 0 || isTerminal()) {
-            return evaluate();
+        if (depth == 0 || GameUtils.isTerminal(player1Inventory, player2Inventory)) {
+            return GameUtils.evaluate(player1Inventory, player2Inventory);
         }
 
         PieceInventory currentInventory = maximizingPlayer ? player1Inventory : player2Inventory;
         int currentPlayer = maximizingPlayer ? 1 : 2;
 
-        List<Move> moves = generateMoves(currentInventory, currentPlayer);
+        List<Move> moves = GameUtils.generateMoves(currentInventory, currentPlayer);
 
         moves.sort((m1, m2) -> {
-            int score1 = historyTable.getOrDefault(getMoveHistoryKey(m1), 0);
-            int score2 = historyTable.getOrDefault(getMoveHistoryKey(m2), 0);
+            int score1 = historyTable.getOrDefault(GameUtils.getMoveHistoryKey(m1), 0);
+            int score2 = historyTable.getOrDefault(GameUtils.getMoveHistoryKey(m2), 0);
             return Integer.compare(score2, score1);
         });
 
@@ -42,11 +36,11 @@ public class Minimax_History {
         if (maximizingPlayer) {
             int maxEval = Integer.MIN_VALUE;
             for (Move move : moves) {
-                if (tryMove(move)) {
+                if (GameUtils.tryMove(move)) {
                     evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
                     int eval = minimax(depth - 1, false, alpha, beta, currentPlyFromRoot + 1);
-                    undoMove(move);
+                    GameUtils.undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
 
                     if (eval > maxEval) {
@@ -56,25 +50,25 @@ public class Minimax_History {
                     alpha = Math.max(alpha, eval);
                     if (beta <= alpha) {
                         prunedNodes++;
-                        String moveKey = getMoveHistoryKey(move);
+                        String moveKey = GameUtils.getMoveHistoryKey(move);
                         historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
                         return maxEval;
                     }
                 }
             }
             if (bestMoveForThisNode != null) {
-                String moveKey = getMoveHistoryKey(bestMoveForThisNode);
+                String moveKey = GameUtils.getMoveHistoryKey(bestMoveForThisNode);
                 historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
             }
             return maxEval;
         } else { // Minimizing player
             int minEval = Integer.MAX_VALUE;
             for (Move move : moves) {
-                if (tryMove(move)) {
+                if (GameUtils.tryMove(move)) {
                     evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
                     int eval = minimax(depth - 1, true, alpha, beta, currentPlyFromRoot + 1);
-                    undoMove(move);
+                    GameUtils.undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
 
                     if (eval < minEval) {
@@ -84,97 +78,17 @@ public class Minimax_History {
                     beta = Math.min(beta, eval);
                     if (beta <= alpha) {
                         prunedNodes++;
-                        String moveKey = getMoveHistoryKey(move);
+                        String moveKey = GameUtils.getMoveHistoryKey(move);
                         historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
                         return minEval;
                     }
                 }
             }
             if (bestMoveForThisNode != null) {
-                String moveKey = getMoveHistoryKey(bestMoveForThisNode);
+                String moveKey = GameUtils.getMoveHistoryKey(bestMoveForThisNode);
                 historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (int) Math.pow(2, depth));
             }
             return minEval;
-        }
-    }
-
-
-    private static boolean tryMove(Move move) {
-        List<int[]> transformedShapeList = move.getTransformedShape();
-
-        return BlockRotator3D.placeShape(
-            transformedShapeList,
-            move.x,
-            move.y,
-            move.player
-        );
-    }
-
-    private static void undoMove(Move move) {
-        List<int[]> transformedShapeList = move.getTransformedShape();
-
-        BlockRotator3D.removeShape(
-            transformedShapeList, // Pass the converted int[][]
-            move.x,
-            move.y
-        );
-    }
-
-
-    public static List<Move> generateMoves(PieceInventory inventory, int player) {
-        List<Move> moves = new ArrayList<>();
-
-        if (inventory.hasPiece("T")) {
-            int[][] shape = Main.tBlockShape;
-            for (int rotationIndex : BlockRotator3D.TBLOCK_ROTATION_INDICES) {
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
-            }
-        }
-        if (inventory.hasPiece("L")) {
-            int[][] shape = Main.lBlockShape;
-            for (int rotationIndex : BlockRotator3D.LBLOCK_ROTATION_INDICES) {
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
-            }
-        }
-        if (inventory.hasPiece("Z")) {
-            int[][] shape = Main.zBlockShape;
-            for (int rotationIndex : BlockRotator3D.ZBLOCK_ROTATION_INDICES) {
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
-            }
-        }
-        if (inventory.hasPiece("O")) {
-            int[][] shape = Main.oBlockShape;
-            for (int rotationIndex : BlockRotator3D.OBLOCK_ROTATION_INDICES) {
-                addMoves(moves, shape, BlockRotator3D.ROTATION_MATRICES[rotationIndex], player, rotationIndex);
-            }
-        }
-        return moves;
-    }
-
-    private static void addMoves(List<Move> moves, int[][] originalShape, int[][] rotationMatrix, int player, int rotationIndex) {
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                moves.add(new Move(rotationIndex, originalShape, rotationMatrix, x, y, player));
-            }
-        }
-    }
-
-    private static boolean isTerminal() {
-        return player1Inventory.isEmpty() && player2Inventory.isEmpty();
-    }
-
-    private static int evaluate() {
-        GameChecker.Result maxPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 1);
-        GameChecker.Result minPlayerResult = GameChecker.checkPlayer(Main.flattenTopView(), 2);
-
-        if (maxPlayerResult.hasWon) {
-            return 1000;
-        } else if (minPlayerResult.hasWon) {
-            return -1000;
-        } else {
-            int score = player1Inventory.calculateInventoryScore() - player2Inventory.calculateInventoryScore();
-            score += ((maxPlayerResult.longestPath - minPlayerResult.longestPath)*10);
-            return score;
         }
     }
 
@@ -187,7 +101,7 @@ public class Minimax_History {
         Move overallBestMove = null;
         int overallBestValue = Integer.MIN_VALUE;
 
-        final long TIME_LIMIT_MS = 120000;
+        final long TIME_LIMIT_MS = 30000;
 
         System.out.println("Starting Iterative Deepening Search...");
 
@@ -201,10 +115,10 @@ public class Minimax_History {
             PieceInventory currentInventory = player1Inventory;
             int currentPlayer = 1;
 
-            List<Move> moves = generateMoves(currentInventory, currentPlayer);
+            List<Move> moves = GameUtils.generateMoves(currentInventory, currentPlayer);
             moves.sort((m1, m2) -> {
-                int score1 = historyTable.getOrDefault(getMoveHistoryKey(m1), 0);
-                int score2 = historyTable.getOrDefault(getMoveHistoryKey(m2), 0);
+                int score1 = historyTable.getOrDefault(GameUtils.getMoveHistoryKey(m1), 0);
+                int score2 = historyTable.getOrDefault(GameUtils.getMoveHistoryKey(m2), 0);
                 return Integer.compare(score2, score1);
             });
 
@@ -218,10 +132,10 @@ public class Minimax_History {
                 }
 
                 currentMoveIndex++;
-                if (tryMove(move)) {
+                if (GameUtils.tryMove(move)) {
                     currentInventory.usePiece(Main.getPieceType(move.shape));
                     int moveValue = minimax(currentDepthIteration - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
-                    undoMove(move);
+                    GameUtils.undoMove(move);
                     currentInventory.returnPiece(Main.getPieceType(move.shape));
 
                     if (moveValue > iterationBestValue) {
