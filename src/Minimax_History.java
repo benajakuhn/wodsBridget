@@ -92,7 +92,7 @@ public class Minimax_History {
         }
     }
 
-    public static Move findBestMove() {
+    public static Move findBestMove(long TIME_LIMIT_MS) {
         long overallStartTime = System.nanoTime();
         evaluatedNodes = 0;
         prunedNodes = 0;
@@ -100,8 +100,6 @@ public class Minimax_History {
 
         Move overallBestMove = null;
         int overallBestValue = Integer.MIN_VALUE;
-
-        final long TIME_LIMIT_MS = 30000;
 
         System.out.println("Starting Iterative Deepening Search...");
 

@@ -35,24 +35,66 @@ public class Main {
     };
 
     public static boolean IS_RANDOM_PLAYER_ACTIVE = true;
+    private static final String DEFAULT_AI_ALGORITHM = "HISTORY"; // Default algorithm
+    private static final int MTDF_MAX_DEPTH = 5; // Example default for MTDf
+    private static final long TIME_LIMIT_MS = 30000; // Example default for MTDf
+    private static final int MTDF_INITIAL_GUESS = 0; // Example default for MTDf
 
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String aiAlgorithm = DEFAULT_AI_ALGORITHM;
+
+        if (args.length > 0) {
+            String inputAlgo = args[0].toUpperCase();
+            if (inputAlgo.equals("MINIMAX") || inputAlgo.equals("HISTORY") || inputAlgo.equals("MTDF")) {
+                aiAlgorithm = inputAlgo;
+            } else {
+                System.out.println("Invalid AI algorithm specified: " + args[0] + ". Defaulting to " + DEFAULT_AI_ALGORITHM);
+            }
+        } else {
+            System.out.println("No AI algorithm specified. Defaulting to " + DEFAULT_AI_ALGORITHM);
+        }
+        System.out.println("Using AI Algorithm: " + aiAlgorithm);
+
 
         while (true) {
             System.out.println("Current board:");
             System.out.println(toAsciiString());
 
-            // Max Player (AI) Move
-            System.out.println("AI is thinking...");
-            Move bestMove = Minimax_History.findBestMove();
+            System.out.println("AI (" + aiAlgorithm + ") is thinking...");
+            Move bestMove = null;
+
+            switch (aiAlgorithm) {
+            case "MINIMAX":
+                bestMove = Minimax_AlphaBeta.findBestMove(1);
+                break;
+            case "HISTORY":
+                bestMove = Minimax_History.findBestMove(TIME_LIMIT_MS);
+                break;
+            case "MTDF":
+                bestMove = MTDf.findBestMoveMTDf(MTDF_MAX_DEPTH, TIME_LIMIT_MS, MTDF_INITIAL_GUESS, 1);
+                break;
+            default:
+                System.out.println("Error: Unknown AI algorithm selected. Defaulting to History.");
+                bestMove = Minimax_History.findBestMove(TIME_LIMIT_MS);
+                break;
+            }
+
+
             if (bestMove == null) {
                 System.out.println("AI has no moves left! Game over.");
                 break;
             }
+
             BlockRotator3D.placeShape(bestMove.getTransformedShape(), bestMove.x, bestMove.y, bestMove.player);
-            Minimax_History.player1Inventory.usePiece(getPieceType(bestMove.shape));
+
+            if (aiAlgorithm.equals("MINIMAX")) {
+                Minimax_AlphaBeta.player1Inventory.usePiece(getPieceType(bestMove.shape));
+            } else {
+                Minimax_History.player1Inventory.usePiece(getPieceType(bestMove.shape));
+            }
+
             System.out.println("AI placed a piece:");
             System.out.println(bestMove);
             System.out.println(toAsciiString());
