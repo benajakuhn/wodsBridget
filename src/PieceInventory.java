@@ -3,10 +3,10 @@ import java.util.Map;
 
 public class PieceInventory {
     private final Map<String, Integer> pieces;
-    private static final int L_PIECE_VALUE = 8;
-    private static final int T_PIECE_PRESENCE_VALUE = 5;
-    private static final int Z_PIECE_PRESENCE_VALUE = 5;
-    private static final int O_PIECE_PRESENCE_VALUE = 5;
+    private static final int L_PIECE_VALUE = 4;
+    private static final int T_PIECE_PRESENCE_VALUE = 2;
+    private static final int Z_PIECE_PRESENCE_VALUE = 2;
+    private static final int O_PIECE_PRESENCE_VALUE = 2;
 
     public PieceInventory() {
         pieces = new HashMap<>();

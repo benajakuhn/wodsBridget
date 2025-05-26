@@ -68,7 +68,9 @@ public class GameUtils {
     }
 
     public static boolean isTerminal(PieceInventory player1Inventory, PieceInventory player2Inventory) {
-        return player1Inventory.isEmpty() && player2Inventory.isEmpty();
+        return player1Inventory.isEmpty() && player2Inventory.isEmpty()
+            || GameChecker.checkPlayer(Main.flattenTopView(), 1).hasWon
+            || GameChecker.checkPlayer(Main.flattenTopView(), 2).hasWon;
     }
 
     public static int evaluate(PieceInventory player1Inventory, PieceInventory player2Inventory) {
@@ -81,7 +83,7 @@ public class GameUtils {
             return -1000;
         } else {
             int score = player1Inventory.calculateInventoryScore() - player2Inventory.calculateInventoryScore();
-            score += ((maxPlayerResult.longestPath - minPlayerResult.longestPath)*10);
+            score += ((maxPlayerResult.longestPath - minPlayerResult.longestPath)*20);
             return score;
         }
     }
