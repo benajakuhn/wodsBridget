@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Minimax_AlphaBeta {
 
-    private static final int MAX_DEPTH = 2; // Adjustable
+    public static int MAX_DEPTH = 2; // Adjustable
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
