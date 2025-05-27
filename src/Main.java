@@ -109,7 +109,13 @@ public class Main {
                 Move randomMove = Minimax_AlphaBeta.findBestMove(2); // Player 2
                 if (randomMove != null) {
                     BlockRotator3D.placeShape(randomMove.getTransformedShape(), randomMove.x, randomMove.y, randomMove.player);
-                    Minimax_History.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                    if (aiAlgorithm.equals("MINIMAX")) {
+                        Minimax_AlphaBeta.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                    } else if (aiAlgorithm.equals("MTDF")) {
+                        MTDf.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                    } else {
+                        Minimax_History.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                    }
                     System.out.println("Random Player placed a piece:");
                     System.out.println(randomMove);
                 } else {
@@ -136,7 +142,13 @@ public class Main {
                     Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
 
                     if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
-                        Minimax_History.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                        if (aiAlgorithm.equals("MINIMAX")) {
+                            Minimax_AlphaBeta.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                        } else if (aiAlgorithm.equals("MTDF")) {
+                            MTDf.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                        } else {
+                            Minimax_History.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                        }
                         break; // Exit the loop if the move is valid
                     } else {
                         System.out.println("Invalid move. Try again.");
