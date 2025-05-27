@@ -11,7 +11,7 @@ public class Profile {
         int depthLimit = 1;
 
         // Initialize the game board and inventories
-        initializeBoardWithRandomMoves(5);
+        initializeBoardWithRandomMoves(4);
 
         // Write header to CSV files
         writeToCSV("TimeProfiling.csv", "Algorithm", "Time (ms)", "Evaluated Nodes", "Pruned Nodes", "Depth Reached", "Total Time (ms)", "TT Hits");
@@ -22,12 +22,14 @@ public class Profile {
             System.out.println("-----------------------------------Starting profiling with time limit: "+ timeLimitMs +"ms------------------------------------");
             getMoveByTime(timeLimitMs);
 
-            System.out.println();
-            System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
-            getMoveByDepth(depthLimit);
+            if (depthLimit <= 3 || timeLimitMs > 600_000) {
+                System.out.println();
+                System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
+                getMoveByDepth(depthLimit);
+                depthLimit = depthLimit + 1;
+            }
 
             timeLimitMs = timeLimitMs * 2;
-            depthLimit = depthLimit + 1;
         }
     }
 
