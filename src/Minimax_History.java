@@ -151,16 +151,16 @@ public class Minimax_History {
             // Print iteration best move and update the overall best move
             overallBestMove = iterationBestMove;
             overallBestValue = iterationBestValue;
-            System.out.println("Depth " + currentDepthIteration + ": Best move found: " + iterationBestMove + " with value: " + iterationBestValue);
-
-            // Print the first few elements of the history table
-            System.out.println("History Table (first few entries):");
-            historyTable.entrySet().stream()
-                .forEach(entry -> System.out.println(entry.getKey() + " -> " + entry.getValue()));
-
-            long iterationEndTime = System.nanoTime();
-            System.out.println("Depth " + currentDepthIteration + " time: " + (iterationEndTime - iterationStartTime) / 1_000_000 + " ms");
-            System.out.println("Cumulative Evaluated Nodes: " + evaluatedNodes + ", Pruned Branches: " + prunedNodes);
+//            System.out.println("Depth " + currentDepthIteration + ": Best move found: " + iterationBestMove + " with value: " + iterationBestValue);
+//
+//            // Print the first few elements of the history table
+//            System.out.println("History Table (first few entries):");
+//            historyTable.entrySet().stream()
+//                .forEach(entry -> System.out.println(entry.getKey() + " -> " + entry.getValue()));
+//
+//            long iterationEndTime = System.nanoTime();
+//            System.out.println("Depth " + currentDepthIteration + " time: " + (iterationEndTime - iterationStartTime) / 1_000_000 + " ms");
+//            System.out.println("Cumulative Evaluated Nodes: " + evaluatedNodes + ", Pruned Branches: " + prunedNodes);
         }
 
         System.out.println("\n--- Iterative Deepening Search Complete ---");
