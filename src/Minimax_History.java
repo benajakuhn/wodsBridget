@@ -12,6 +12,7 @@ public class Minimax_History {
     public static int evaluatedNodes = 0;
     public static int prunedNodes = 0;
     public static int depthReached = 0;
+    public static long total_time = 0;
 
     // History table: Map<MoveKey_String, Score_Integer>
     private static Map<String, Integer> historyTable = new HashMap<>();
@@ -168,7 +169,8 @@ public class Minimax_History {
 
         System.out.println("\n--- Iterative Deepening Search Complete ---");
         long overallEndTime = System.nanoTime();
-        System.out.println("Total execution time: " + (overallEndTime - overallStartTime) / 1_000_000 + " ms");
+        total_time = (overallEndTime - overallStartTime) / 1_000_000;
+        System.out.println("Total execution time: " + total_time + " ms");
         System.out.println("Total Evaluated nodes: " + evaluatedNodes);
         System.out.println("Total Pruned branches: " + prunedNodes);
         System.out.println("Depth reached: " + depthReached);
