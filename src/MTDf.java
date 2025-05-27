@@ -32,6 +32,7 @@ public class MTDf {
     public static long total_evaluatedNodes = 0;
     public static long total_ttHits = 0;
     public static long depthReached = 0;
+    public static long total_time = 0;
 
     // Constants for score bounds
     private static final int INFINITY = Integer.MAX_VALUE;
@@ -283,7 +284,8 @@ public class MTDf {
 
         System.out.println("\n--- MTD(f) Iterative Deepening Search Complete ---");
         long overallEndTime = System.nanoTime();
-        System.out.println("Total execution time: " + (overallEndTime - overallStartTime) / 1_000_000 + " ms");
+        total_time = (overallEndTime - overallStartTime) / 1_000_000;
+        System.out.println("Total execution time: " + total_time + " ms");
         System.out.println("Total Evaluated nodes: " + total_evaluatedNodes);
         System.out.println("Total pruned branches: " + prunedNodes);
         System.out.println("Total TT Hits: " + total_ttHits);
