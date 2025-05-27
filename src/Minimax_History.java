@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Minimax_History {
+    public static int MAX_DEPTH = 5;
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
@@ -103,7 +104,7 @@ public class Minimax_History {
 
         System.out.println("Starting Iterative Deepening Search...");
 
-        for (int currentDepthIteration = 1; ((System.nanoTime() - overallStartTime) / 1_000_000) <= TIME_LIMIT_MS; currentDepthIteration++) {
+        for (int currentDepthIteration = 1; (((System.nanoTime() - overallStartTime) / 1_000_000) <= TIME_LIMIT_MS) && currentDepthIteration <= MAX_DEPTH; currentDepthIteration++) {
             long iterationStartTime = System.nanoTime();
             System.out.println("\n--- Iteration Depth: " + currentDepthIteration + " ---");
 
