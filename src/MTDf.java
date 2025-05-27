@@ -202,6 +202,12 @@ public class MTDf {
      * @return The best Move found.
      */
     public static Move findBestMoveMTDf(int maxSearchDepth, long timeLimitMillis, int initialAspirationGuess, int player) {
+        total_evaluatedNodes = 0;
+        prunedNodes = 0;
+        depthReached = 0;
+        total_time = 0;
+        total_ttHits = 0;
+
         long overallStartTime = System.nanoTime();
         Move overallBestMove = null;
         int bestScoreSoFar = (player == 1) ? NEGATIVE_INFINITY : INFINITY; // Max player aims high, Min player aims low

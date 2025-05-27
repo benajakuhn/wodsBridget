@@ -99,6 +99,8 @@ public class Minimax_History {
         long overallStartTime = System.nanoTime();
         evaluatedNodes = 0;
         prunedNodes = 0;
+        total_time = 0;
+        depthReached = 0;
         historyTable.clear();
 
         Move overallBestMove = null;

@@ -135,6 +135,7 @@ public class Minimax_AlphaBeta {
         long startTime = System.nanoTime();
         evaluatedNodes = 0; // Reset counters for each call
         prunedNodes = 0;
+        total_time = 0;
 
         int bestValue = Integer.MIN_VALUE;
         Move bestMove = null;
