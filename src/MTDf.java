@@ -38,6 +38,8 @@ public class MTDf {
     private static final int INFINITY = Integer.MAX_VALUE;
     private static final int NEGATIVE_INFINITY = Integer.MIN_VALUE;
 
+    private static long overallStartTime = 0;
+    private static long timeLimitMillis = 0;
 
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
@@ -77,6 +79,14 @@ public class MTDf {
         // Transposition Table Lookup
         Long gameStateKey = getGameStateKey();
         TTEntry ttEntry = transpositionTable.get(gameStateKey);
+
+        // Check time limit
+        if (((System.nanoTime() - overallStartTime) / 1_000_000) >= timeLimitMillis) {
+            Move bestMove = (ttEntry != null) ? ttEntry.bestMove : null;
+            int score = maximizingPlayer ? alpha : beta; // Return bound based on player
+            return new MT_Result(score, bestMove);
+        }
+
         if (ttEntry != null && ttEntry.depth >= depth) {
             ttHits++;
             if (ttEntry.boundType == TTEntry.BoundType.EXACT) {
@@ -196,19 +206,20 @@ public class MTDf {
      * Finds the best move using MTD(f) with iterative deepening.
      *
      * @param maxSearchDepth The maximum depth for iterative deepening.
-     * @param timeLimitMillis Time limit for the search.
+     * @param l_timeLimitMillis Time limit for the search.
      * @param initialAspirationGuess The guess for the minimax score, typically from the previous iteration's result.
      * @param player The current player (1 for Max, 2 for Min).
      * @return The best Move found.
      */
-    public static Move findBestMoveMTDf(int maxSearchDepth, long timeLimitMillis, int initialAspirationGuess, int player) {
+    public static Move findBestMoveMTDf(int maxSearchDepth, long l_timeLimitMillis, int initialAspirationGuess, int player) {
         total_evaluatedNodes = 0;
         prunedNodes = 0;
         depthReached = 0;
         total_time = 0;
         total_ttHits = 0;
 
-        long overallStartTime = System.nanoTime();
+        timeLimitMillis = l_timeLimitMillis;
+        overallStartTime = System.nanoTime();
         Move overallBestMove = null;
         int bestScoreSoFar = (player == 1) ? NEGATIVE_INFINITY : INFINITY; // Max player aims high, Min player aims low
 
@@ -233,9 +244,6 @@ public class MTDf {
             Move bestMoveThisDepth = null;
 
             do {
-                if (((System.nanoTime() - overallStartTime) / 1_000_000) >= timeLimitMillis) {
-                    break;
-                }
                 int beta = f; // The 'bound' to test against in MTD(f)
                 // MT is called with a null window around beta: (beta-1, beta)
 

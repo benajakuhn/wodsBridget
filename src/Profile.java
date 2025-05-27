@@ -17,7 +17,7 @@ public class Profile {
         writeToCSV("TimeProfiling.csv", "Algorithm", "Time (ms)", "Evaluated Nodes", "Pruned Nodes", "Depth Reached", "Total Time (ms)", "TT Hits");
         writeToCSV("DepthProfiling.csv", "Algorithm", "Depth", "Evaluated Nodes", "Pruned Nodes", "Total Time (ms)", "TT Hits");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             System.out.println();
             System.out.println("-----------------------------------Starting profiling with time limit: "+ timeLimitMs +"ms------------------------------------");
             getMoveByTime(timeLimitMs);
