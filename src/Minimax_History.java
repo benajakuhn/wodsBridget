@@ -9,9 +9,9 @@ public class Minimax_History {
     public static PieceInventory player2Inventory = new PieceInventory();
 
     // Counters for search statistics
-    public static int evaluatedNodes = 0;
-    public static int prunedNodes = 0;
-    public static int depthReached = 0;
+    public static long evaluatedNodes = 0;
+    public static long prunedNodes = 0;
+    public static long depthReached = 0;
     public static long total_time = 0;
 
     // History table: Map<MoveKey_String, Score_Integer>
