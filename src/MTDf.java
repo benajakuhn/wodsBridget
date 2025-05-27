@@ -31,6 +31,7 @@ public class MTDf {
 
     public static long total_evaluatedNodes = 0;
     public static long total_ttHits = 0;
+    public static long depthReached = 0;
 
     // Constants for score bounds
     private static final int INFINITY = Integer.MAX_VALUE;
@@ -212,6 +213,7 @@ public class MTDf {
             long iterationStartTime = System.nanoTime();
             evaluatedNodes = 0;
             ttHits = 0;
+            depthReached = currentDepth;
             // historyTable.clear(); // Optionally clear history table per iteration or keep it cumulative
 
 //            System.out.println("\n--- MTD(f) Iteration Depth: " + currentDepth + ", Initial Guess: " + currentGuess + " ---");
@@ -285,6 +287,7 @@ public class MTDf {
         System.out.println("Total Evaluated nodes: " + total_evaluatedNodes);
         System.out.println("Total pruned branches: " + prunedNodes);
         System.out.println("Total TT Hits: " + total_ttHits);
+        System.out.println("Depth reached: " + depthReached);
         if (overallBestMove != null) {
             System.out.println("Overall Best move found: " + overallBestMove + " with value: " + currentGuess);
         } else {
