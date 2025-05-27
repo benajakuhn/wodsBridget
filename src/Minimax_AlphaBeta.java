@@ -7,8 +7,9 @@ public class Minimax_AlphaBeta {
     public static PieceInventory player1Inventory = new PieceInventory();
     public static PieceInventory player2Inventory = new PieceInventory();
 
-    public static int evaluatedNodes = 0;
-    public static int prunedNodes = 0; // Counter for pruned nodes
+    public static long evaluatedNodes = 0;
+    public static long prunedNodes = 0;
+    public static long total_time = 0;
 
 
     public static int minimax(int depth, boolean maximizingPlayer, int alpha, int beta, int maxPlayerNumber) {
@@ -164,8 +165,8 @@ public class Minimax_AlphaBeta {
         }
 
         long endTime = System.nanoTime(); // End time measurement
-        long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
-        System.out.println("Total Execution time: " + duration + " ms");
+        total_time = (endTime - startTime) / 1_000_000; // Convert to milliseconds
+        System.out.println("Total Execution time: " + total_time + " ms");
         System.out.println("Total Evaluated nodes: " + evaluatedNodes);
         System.out.println("Total Pruned branches: " + prunedNodes);
 
