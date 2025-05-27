@@ -105,8 +105,8 @@ public class Minimax_History {
         System.out.println("Starting Iterative Deepening Search...");
 
         for (int currentDepthIteration = 1; (((System.nanoTime() - overallStartTime) / 1_000_000) <= TIME_LIMIT_MS) && currentDepthIteration <= MAX_DEPTH; currentDepthIteration++) {
-            long iterationStartTime = System.nanoTime();
-            System.out.println("\n--- Iteration Depth: " + currentDepthIteration + " ---");
+//            long iterationStartTime = System.nanoTime();
+//            System.out.println("\n--- Iteration Depth: " + currentDepthIteration + " ---");
 
             int iterationBestValue = Integer.MIN_VALUE;
             Move iterationBestMove = null;
