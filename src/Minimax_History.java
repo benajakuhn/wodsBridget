@@ -11,6 +11,7 @@ public class Minimax_History {
     // Counters for search statistics
     public static int evaluatedNodes = 0;
     public static int prunedNodes = 0;
+    public static int depthReached = 0;
 
     // History table: Map<MoveKey_String, Score_Integer>
     private static Map<String, Integer> historyTable = new HashMap<>();
@@ -107,6 +108,8 @@ public class Minimax_History {
         for (int currentDepthIteration = 1; (((System.nanoTime() - overallStartTime) / 1_000_000) <= TIME_LIMIT_MS) && currentDepthIteration <= MAX_DEPTH; currentDepthIteration++) {
 //            long iterationStartTime = System.nanoTime();
 //            System.out.println("\n--- Iteration Depth: " + currentDepthIteration + " ---");
+            depthReached = currentDepthIteration;
+
 
             int iterationBestValue = Integer.MIN_VALUE;
             Move iterationBestMove = null;
@@ -168,6 +171,7 @@ public class Minimax_History {
         System.out.println("Total execution time: " + (overallEndTime - overallStartTime) / 1_000_000 + " ms");
         System.out.println("Total Evaluated nodes: " + evaluatedNodes);
         System.out.println("Total Pruned branches: " + prunedNodes);
+        System.out.println("Depth reached: " + depthReached);
 
         if (overallBestMove != null) {
             System.out.println("Overall Best move found: " + overallBestMove + " with value: " + overallBestValue);
