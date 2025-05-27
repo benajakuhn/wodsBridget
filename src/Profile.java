@@ -1,6 +1,7 @@
 public class Profile {
     public static void main(String[] args) {
         initializeBoardWithRandomMoves(5);
+        getMoveByTime(60000);
         getMoveByDepth(3);
     }
 
@@ -54,5 +55,14 @@ public class Profile {
 
         System.out.println("\nStarting MTD-f search with depth: " + depth);
         MTDf.findBestMoveMTDf(depth, Integer.MAX_VALUE, 0, 1);
+    }
+
+    public static void getMoveByTime(int timeInMillis) {
+        System.out.println("\nStarting Minimax History search with time limit: " + timeInMillis + " ms");
+        Minimax_History.MAX_DEPTH = Integer.MAX_VALUE;
+        Minimax_History.findBestMove(timeInMillis);
+
+        System.out.println("\nStarting MTD-f search with time limit: " + timeInMillis + " ms");
+        MTDf.findBestMoveMTDf(Integer.MAX_VALUE, timeInMillis, 0, 1);
     }
 }
