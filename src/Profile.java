@@ -14,8 +14,8 @@ public class Profile {
         initializeBoardWithRandomMoves(5);
 
         // Write header to CSV files
-        writeToCSV("TimeProfiling.csv", "Algorithm", "Time (ms)", "Evaluated Nodes", "Pruned Nodes", "Depth Reached", "Total Time (ms)");
-        writeToCSV("DepthProfiling.csv", "Algorithm", "Depth", "Evaluated Nodes", "Pruned Nodes", "Total Time (ms)");
+        writeToCSV("TimeProfiling.csv", "Algorithm", "Time (ms)", "Evaluated Nodes", "Pruned Nodes", "Depth Reached", "Total Time (ms)", "TT Hits");
+        writeToCSV("DepthProfiling.csv", "Algorithm", "Depth", "Evaluated Nodes", "Pruned Nodes", "Total Time (ms)", "TT Hits");
 
         for (int i = 0; i < 10; i++) {
             System.out.println();
@@ -83,7 +83,7 @@ public class Profile {
 
         System.out.println("\nStarting MTD-f search with depth: " + depth);
         MTDf.findBestMoveMTDf(depth, Integer.MAX_VALUE, 0, 1);
-        writeToCSV("DepthProfiling.csv", "MTD-f", depth, MTDf.evaluatedNodes, MTDf.prunedNodes, MTDf.total_time);
+        writeToCSV("DepthProfiling.csv", "MTD-f", depth, MTDf.total_evaluatedNodes, MTDf.prunedNodes, MTDf.total_time, MTDf.total_ttHits);
     }
 
     public static void getMoveByTime(int timeInMillis) {
@@ -94,7 +94,7 @@ public class Profile {
 
         System.out.println("\nStarting MTD-f search with time limit: " + timeInMillis + " ms");
         MTDf.findBestMoveMTDf(Integer.MAX_VALUE, timeInMillis, 0, 1);
-        writeToCSV("TimeProfiling.csv", "MTD-f", timeInMillis, MTDf.evaluatedNodes, MTDf.prunedNodes, MTDf.depthReached, MTDf.total_time);
+        writeToCSV("TimeProfiling.csv", "MTD-f", timeInMillis, MTDf.total_evaluatedNodes, MTDf.prunedNodes, MTDf.depthReached, MTDf.total_time, MTDf.total_ttHits);
     }
 
 
