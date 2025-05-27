@@ -162,14 +162,12 @@ public class Minimax_AlphaBeta {
                 }
             }
         }
-        System.out.println(); // Move to next line after progress bar is complete
-
-        System.out.println("Evaluated nodes at Depth " + MAX_DEPTH + ": " + evaluatedNodes);
-        System.out.println("Pruned branches: " + prunedNodes);
 
         long endTime = System.nanoTime(); // End time measurement
         long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
-        System.out.println("Execution time: " + duration + " ms");
+        System.out.println("Total Execution time: " + duration + " ms");
+        System.out.println("Total Evaluated nodes: " + evaluatedNodes);
+        System.out.println("Total Pruned branches: " + prunedNodes);
 
         if (bestMove != null) {
             System.out.println("Best move found for Player " + playerNumber + ": " + bestMove + " with value: " + bestValue);
