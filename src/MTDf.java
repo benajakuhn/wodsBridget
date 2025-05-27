@@ -224,6 +224,9 @@ public class MTDf {
             Move bestMoveThisDepth = null;
 
             do {
+                if (((System.nanoTime() - overallStartTime) / 1_000_000) >= timeLimitMillis) {
+                    break;
+                }
                 int beta = f; // The 'bound' to test against in MTD(f)
                 // MT is called with a null window around beta: (beta-1, beta)
 
