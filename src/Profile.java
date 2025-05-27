@@ -1,8 +1,18 @@
 public class Profile {
     public static void main(String[] args) {
+        int timeLimitMs = 300_000;
+        int depthLimit = 3;
+
+        // Initialize the game board and inventories
         initializeBoardWithRandomMoves(5);
-        getMoveByTime(60000);
-        getMoveByDepth(3);
+
+        System.out.println();
+        System.out.println("-----------------------------------Starting profiling with time limit: "+ timeLimitMs +"ms------------------------------------");
+        getMoveByTime(timeLimitMs);
+
+        System.out.println();
+        System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
+        getMoveByDepth(depthLimit);
     }
 
     // init the board with random moves for both players
