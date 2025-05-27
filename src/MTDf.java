@@ -27,6 +27,10 @@ public class MTDf {
     // Statistics
     public static long evaluatedNodes = 0;
     public static long ttHits = 0;
+    public static long prunedNodes = 0;
+
+    public static long total_evaluatedNodes = 0;
+    public static long total_ttHits = 0;
 
     // Constants for score bounds
     private static final int INFINITY = Integer.MAX_VALUE;
@@ -128,6 +132,7 @@ public class MTDf {
                     }
                     alpha = Math.max(alpha, maxEval);
                     if (beta <= alpha) {
+                        prunedNodes++;
                         String moveKey = GameUtils.getMoveHistoryKey(move);
                         historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (1 << depth)); // Depth-weighted
                         break;
@@ -163,6 +168,7 @@ public class MTDf {
                     }
                     beta = Math.min(beta, minEval);
                     if (beta <= alpha) { // Alpha cutoff
+                        prunedNodes++;
                         String moveKey = GameUtils.getMoveHistoryKey(move);
                         historyTable.put(moveKey, historyTable.getOrDefault(moveKey, 0) + (1 << depth));
                         break;
@@ -208,7 +214,7 @@ public class MTDf {
             ttHits = 0;
             // historyTable.clear(); // Optionally clear history table per iteration or keep it cumulative
 
-            System.out.println("\n--- MTD(f) Iteration Depth: " + currentDepth + ", Initial Guess: " + currentGuess + " ---");
+//            System.out.println("\n--- MTD(f) Iteration Depth: " + currentDepth + ", Initial Guess: " + currentGuess + " ---");
 
             // MTD(f) loop for the current depth
             int lowerBound = NEGATIVE_INFINITY;
@@ -221,7 +227,7 @@ public class MTDf {
                 int beta = f; // The 'bound' to test against in MTD(f)
                 // MT is called with a null window around beta: (beta-1, beta)
 
-                System.out.println("  MTD(f) call with beta (test bound) = " + beta);
+//                System.out.println("  MTD(f) call with beta (test bound) = " + beta);
 
                 // MT_Result contains the score and the best move found for that specific MT call
                 MT_Result result = memoryEnhancedTest(currentDepth, player == 1, beta - 1, beta, 0);
@@ -247,7 +253,7 @@ public class MTDf {
                         bestMoveThisDepth = result.bestMove;
                     }
                 }
-                System.out.println("    MT returned: " + result.score + ", New bounds: [" + lowerBound + ", " + upperBound + "], Next f: " + f);
+//                System.out.println("    MT returned: " + result.score + ", New bounds: [" + lowerBound + ", " + upperBound + "], Next f: " + f);
 
             } while (lowerBound < upperBound);
 
@@ -255,11 +261,13 @@ public class MTDf {
             overallBestMove = bestMoveThisDepth; // Best move for this converged value
             bestScoreSoFar = currentGuess;
 
+            total_evaluatedNodes += evaluatedNodes;
+            total_ttHits += ttHits;
 
-            long iterationEndTime = System.nanoTime();
-            System.out.println("Depth " + currentDepth + ": Converged Value = " + currentGuess + ", Best Move: " + overallBestMove);
-            System.out.println("Depth " + currentDepth + " time: " + (iterationEndTime - iterationStartTime) / 1_000_000 + " ms");
-            System.out.println("Evaluated Nodes (this depth): " + evaluatedNodes + ", TT Hits: " + ttHits);
+//            long iterationEndTime = System.nanoTime();
+//            System.out.println("Depth " + currentDepth + ": Converged Value = " + currentGuess + ", Best Move: " + overallBestMove);
+//            System.out.println("Depth " + currentDepth + " time: " + (iterationEndTime - iterationStartTime) / 1_000_000 + " ms");
+//            System.out.println("Evaluated Nodes (this depth): " + evaluatedNodes + ", TT Hits: " + ttHits);
 
             // Check time limit
             if (((System.nanoTime() - overallStartTime) / 1_000_000) >= timeLimitMillis && currentDepth < maxSearchDepth) {
@@ -271,6 +279,9 @@ public class MTDf {
         System.out.println("\n--- MTD(f) Iterative Deepening Search Complete ---");
         long overallEndTime = System.nanoTime();
         System.out.println("Total execution time: " + (overallEndTime - overallStartTime) / 1_000_000 + " ms");
+        System.out.println("Total Evaluated nodes: " + total_evaluatedNodes);
+        System.out.println("Total pruned branches: " + prunedNodes);
+        System.out.println("Total TT Hits: " + total_ttHits);
         if (overallBestMove != null) {
             System.out.println("Overall Best move found: " + overallBestMove + " with value: " + currentGuess);
         } else {
