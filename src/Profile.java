@@ -17,20 +17,22 @@ public class Profile {
         writeToCSV("TimeProfiling.csv", "Algorithm", "Time (ms)", "Evaluated Nodes", "Pruned Nodes", "Depth Reached", "Total Time (ms)", "TT Hits");
         writeToCSV("DepthProfiling.csv", "Algorithm", "Depth", "Evaluated Nodes", "Pruned Nodes", "Total Time (ms)", "TT Hits");
 
-        for (int i = 0; i < 100; i++) {
+        while (depthLimit <= 3) {
+            System.out.println();
+            System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
+            getMoveByDepth(depthLimit);
+            depthLimit = depthLimit + 1;
+        }
+
+        while (timeLimitMs < 4_000_000 ) {
             System.out.println();
             System.out.println("-----------------------------------Starting profiling with time limit: "+ timeLimitMs +"ms------------------------------------");
             getMoveByTime(timeLimitMs);
-
-            if (depthLimit <= 3 || timeLimitMs > 600_000) {
-                System.out.println();
-                System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
-                getMoveByDepth(depthLimit);
-                depthLimit = depthLimit + 1;
-            }
-
             timeLimitMs = timeLimitMs * 2;
         }
+
+
+
     }
 
     // init the board with random moves for both players
@@ -43,6 +45,7 @@ public class Profile {
             if(BlockRotator3D.placeShape(move.getTransformedShape(), move.x, move.y, 1)){
                 System.out.println("Player 1 placed: " + move);
                 Minimax_AlphaBeta.player1Inventory.usePiece(Main.getPieceType(move.shape));
+                Minimax_AlphaBeta_New.player1Inventory.usePiece(Main.getPieceType(move.shape));
                 Minimax_History.player1Inventory.usePiece(Main.getPieceType(move.shape));
                 MTDf.player2Inventory.usePiece(Main.getPieceType(move.shape));
             }
@@ -50,6 +53,7 @@ public class Profile {
             if(BlockRotator3D.placeShape(move.getTransformedShape(), move.x, move.y, 2)){
                 System.out.println("Player 2 placed: " + move);
                 Minimax_AlphaBeta.player2Inventory.usePiece(Main.getPieceType(move.shape));
+                Minimax_AlphaBeta_New.player2Inventory.usePiece(Main.getPieceType(move.shape));
                 Minimax_History.player2Inventory.usePiece(Main.getPieceType(move.shape));
                 MTDf.player1Inventory.usePiece(Main.getPieceType(move.shape));
             }
@@ -74,9 +78,9 @@ public class Profile {
     }
     public static void getMoveByDepth(int depth) {
         System.out.println("\nStarting Minimax AlphaBeta search with depth: " + depth);
-        Minimax_AlphaBeta.MAX_DEPTH = depth;
-        Minimax_AlphaBeta.findBestMove(1);
-        writeToCSV("DepthProfiling.csv", "Minimax AlphaBeta", depth, Minimax_AlphaBeta.evaluatedNodes, Minimax_AlphaBeta.prunedNodes, Minimax_AlphaBeta.total_time);
+        Minimax_AlphaBeta_New.MAX_DEPTH = depth;
+        Minimax_AlphaBeta_New.findBestMove(1);
+        writeToCSV("DepthProfiling.csv", "Minimax AlphaBeta", depth, Minimax_AlphaBeta_New.evaluatedNodes, Minimax_AlphaBeta_New.prunedNodes, Minimax_AlphaBeta_New.total_time);
 
         System.out.println("\nStarting Minimax History search with depth: " + depth);
         Minimax_History.MAX_DEPTH = depth;
