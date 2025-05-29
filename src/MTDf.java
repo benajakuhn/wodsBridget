@@ -254,7 +254,6 @@ public class MTDf {
 
                 // MT_Result contains the score and the best move found for that specific MT call
                 MT_Result result = memoryEnhancedTest(currentDepth, player == 1, beta - 1, beta, 0);
-                evaluatedNodes++; // Count root MTD(f) call as one evaluation path
 
                 if (result.score < beta) { // Failed low, found an upper bound
                     upperBound = result.score;
