@@ -135,10 +135,10 @@ public class Minimax_History {
                 if (((System.nanoTime() - overallStartTime) / 1_000_000) >= TIME_LIMIT_MS) {
                     break;
                 }
-                evaluatedNodes++;
 
                 currentMoveIndex++;
                 if (GameUtils.tryMove(move)) {
+                    evaluatedNodes++;
                     currentInventory.usePiece(Main.getPieceType(move.shape));
                     int moveValue = minimax(currentDepthIteration - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
                     GameUtils.undoMove(move);
