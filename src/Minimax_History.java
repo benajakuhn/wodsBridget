@@ -135,6 +135,7 @@ public class Minimax_History {
                 if (((System.nanoTime() - overallStartTime) / 1_000_000) >= TIME_LIMIT_MS) {
                     break;
                 }
+                evaluatedNodes++;
 
                 currentMoveIndex++;
                 if (GameUtils.tryMove(move)) {
