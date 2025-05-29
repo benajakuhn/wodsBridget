@@ -31,8 +31,17 @@ public class Profile {
             timeLimitMs = timeLimitMs * 2;
         }
 
+        System.out.println();
+        System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
+        getMoveByDepth(depthLimit);
+        depthLimit = depthLimit + 1;
 
-
+        while(depthLimit < 100) {
+            System.out.println();
+            System.out.println("-----------------------------------Starting profiling with depth limit: "+ depthLimit +"------------------------------------");
+            getMoveByDepthMTDf(depthLimit);
+            depthLimit = depthLimit + 1;
+        }
     }
 
     // init the board with random moves for both players
@@ -92,12 +101,24 @@ public class Profile {
         writeToCSV("DepthProfiling.csv", "MTD-f", depth, MTDf.total_evaluatedNodes, MTDf.prunedNodes, MTDf.total_time, MTDf.total_ttHits);
     }
 
+    public static void getMoveByDepthMTDf(int depth) {
+        System.out.println("\nStarting MTD-f search with depth: " + depth);
+        MTDf.findBestMoveMTDf(depth, Integer.MAX_VALUE, 0, 1);
+        writeToCSV("DepthProfiling.csv", "MTD-f", depth, MTDf.total_evaluatedNodes, MTDf.prunedNodes, MTDf.total_time, MTDf.total_ttHits);
+    }
+
     public static void getMoveByTime(int timeInMillis) {
         System.out.println("\nStarting Minimax History search with time limit: " + timeInMillis + " ms");
         Minimax_History.MAX_DEPTH = Integer.MAX_VALUE;
         Minimax_History.findBestMove(timeInMillis);
         writeToCSV("TimeProfiling.csv", "Minimax History",timeInMillis,Minimax_History.evaluatedNodes, Minimax_History.prunedNodes, Minimax_History.depthReached, Minimax_History.total_time);
 
+        System.out.println("\nStarting MTD-f search with time limit: " + timeInMillis + " ms");
+        MTDf.findBestMoveMTDf(Integer.MAX_VALUE, timeInMillis, 0, 1);
+        writeToCSV("TimeProfiling.csv", "MTD-f", timeInMillis, MTDf.total_evaluatedNodes, MTDf.prunedNodes, MTDf.depthReached, MTDf.total_time, MTDf.total_ttHits);
+    }
+
+    public static void getMoveByTimeMTDf(int timeInMillis) {
         System.out.println("\nStarting MTD-f search with time limit: " + timeInMillis + " ms");
         MTDf.findBestMoveMTDf(Integer.MAX_VALUE, timeInMillis, 0, 1);
         writeToCSV("TimeProfiling.csv", "MTD-f", timeInMillis, MTDf.total_evaluatedNodes, MTDf.prunedNodes, MTDf.depthReached, MTDf.total_time, MTDf.total_ttHits);
