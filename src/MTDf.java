@@ -213,10 +213,13 @@ public class MTDf {
      */
     public static Move findBestMoveMTDf(int maxSearchDepth, long l_timeLimitMillis, int initialAspirationGuess, int player) {
         total_evaluatedNodes = 0;
+        evaluatedNodes = 0;
         prunedNodes = 0;
         depthReached = 0;
         total_time = 0;
         total_ttHits = 0;
+        historyTable.clear();
+        transpositionTable.clear();
 
         timeLimitMillis = l_timeLimitMillis;
         overallStartTime = System.nanoTime();
