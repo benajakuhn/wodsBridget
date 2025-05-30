@@ -1,0 +1,11 @@
+Algorithm,Depth,Evaluated Nodes,Pruned Nodes,Total Time (ms),TT Hits
+Minimax AlphaBeta,1,896,0,6
+Minimax History,1,896,0,18
+MTD-f,1,1818,5,94,5
+Minimax AlphaBeta,2,772709,0,4005
+Minimax History,2,773605,0,4483
+MTD-f,2,19089,785,868,14061
+Minimax AlphaBeta,3,3836611,730277,52972
+Minimax History,3,2350542,731888,308746
+MTD-f,3,483879,2813,17299,21228
+Minimax AlphaBeta,4,421751043,2450594,3863667
