@@ -101,7 +101,7 @@ public class GameInterface {
                     if (parts.length != 4) {
                         System.out.println("Invalid input. Try again.");
                         lastMoveWasInvalid = true; //skip AI so we can try again
-                        return new GameState(false, true, "NA", Main.GAME_BOARD);
+                        return GameState.invalidGS();
                     }
 
                     String pieceType = parts[0].toUpperCase();
@@ -109,8 +109,14 @@ public class GameInterface {
                     System.out.println("Rotation index: " + rotationIndex);
                     int x = Integer.parseInt(parts[2]);
                     int y = Integer.parseInt(parts[3]);
-
-                    int[][] shape = Main.getShapeFromType(pieceType);
+                    int[][] shape = null;
+                    try {
+                    shape = Main.getShapeFromType(pieceType);
+                    } catch (Exception e){
+                        System.out.println("Invalid piece. Try again.");
+                        lastMoveWasInvalid = true; //skip AI so we can try again
+                        return GameState.invalidGS();
+                    }
                     int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
                     Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
 
@@ -152,6 +158,10 @@ public static final class GameState {
         this.moveInvalid = moveInvalid;
         this.winner = winner;
         this.board = board;
+    }
+
+    public static GameState invalidGS(){
+        return new GameState(false, true, "NA", Main.GAME_BOARD);
     }
 
     public boolean isGameOver() {
