@@ -36,10 +36,10 @@ public class Main {
     };
 
     public static boolean IS_RANDOM_PLAYER_ACTIVE = true;
-    private static final String DEFAULT_AI_ALGORITHM = "MTDF"; // Default algorithm
-    private static final int MTDF_MAX_DEPTH = 5; // Example default for MTDf
-    private static final long TIME_LIMIT_MS = 30000; // Example default for MTDf
-    private static final int MTDF_INITIAL_GUESS = 0; // Example default for MTDf
+    public static final String DEFAULT_AI_ALGORITHM = "MTDF"; // Default algorithm
+    public static final int MTDF_MAX_DEPTH = 5; // Example default for MTDf
+    public static final long TIME_LIMIT_MS = 30000; // Example default for MTDf
+    public static final int MTDF_INITIAL_GUESS = 0; // Example default for MTDf
 
 
     public static void main(String[] args) {
@@ -200,7 +200,7 @@ public class Main {
         return false;
     }
 
-    private static int[][] getShapeFromType(String type) {
+    public static int[][] getShapeFromType(String type) {
         switch (type) {
             case "T":
                 return tBlockShape;
