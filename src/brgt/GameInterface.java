@@ -1,20 +1,24 @@
 package brgt;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class GameInterface {
-    public record GameState(boolean gameOver, boolean moveInvalid, String winner, int[][][] board)
+    //jdk 11, no records (bruh) public record GameState(boolean gameOver, boolean moveInvalid, String winner, int[][][] board){}
     public static boolean lastMoveWasInvalid = false;
 
-    public static GameState playerMove(inputAlgo, String playerInp){
+    public static GameState playerMove(String inputAlgo, String playerInp){
+        String aiAlgorithm = Main.DEFAULT_AI_ALGORITHM;
         if(!lastMoveWasInvalid){ //skip ai move if last move was invalid
         //Scanner scanner = new Scanner(System.in);
-        String aiAlgorithm = Main.DEFAULT_AI_ALGORITHM;
 
-        if (args.length > 0) {
+        //if (args.length > 0) {
+        if(!inputAlgo.equals("")){
             //String inputAlgo = args[0].toUpperCase();
             if (inputAlgo.equals("MINIMAX") || inputAlgo.equals("HISTORY") || inputAlgo.equals("MTDF")) {
                 aiAlgorithm = inputAlgo;
             } else {
-                System.out.println("Invalid AI algorithm specified: " + args[0] + ". Defaulting to " + Main.DEFAULT_AI_ALGORITHM);
+                //System.out.println("Invalid AI algorithm specified: " + args[0] + ". Defaulting to " + Main.DEFAULT_AI_ALGORITHM);
+                System.out.println("Invalid AI algorithm specified: " + inputAlgo + ". Defaulting to " + Main.DEFAULT_AI_ALGORITHM);
             }
         } else {
             System.out.println("No AI algorithm specified. Defaulting to " + Main.DEFAULT_AI_ALGORITHM);
@@ -54,18 +58,18 @@ public class GameInterface {
             BlockRotator3D.placeShape(bestMove.getTransformedShape(), bestMove.x, bestMove.y, bestMove.player);
 
             if (aiAlgorithm.equals("MINIMAX")) {
-                Minimax_AlphaBeta.player1Inventory.usePiece(getPieceType(bestMove.shape));
+                Minimax_AlphaBeta.player1Inventory.usePiece(Main.getPieceType(bestMove.shape));
             } else if (aiAlgorithm.equals("MTDF")) {
-                MTDf.player1Inventory.usePiece(getPieceType(bestMove.shape));
+                MTDf.player1Inventory.usePiece(Main.getPieceType(bestMove.shape));
             } else {
-                Minimax_History.player1Inventory.usePiece(getPieceType(bestMove.shape));
+                Minimax_History.player1Inventory.usePiece(Main.getPieceType(bestMove.shape));
             }
 
             System.out.println("AI placed a piece:");
             System.out.println(bestMove);
-            System.out.println(toAsciiString());
+            System.out.println(Main.toAsciiString());
 
-            if (checkWin()){
+            if (Main.checkWin()){
                 return new GameState(true, false, "AI", Main.GAME_BOARD);
             }
             } //skip ai move if last move was invalid
@@ -78,11 +82,11 @@ public class GameInterface {
                 if (randomMove != null) {
                     BlockRotator3D.placeShape(randomMove.getTransformedShape(), randomMove.x, randomMove.y, randomMove.player);
                     if (aiAlgorithm.equals("MINIMAX")) {
-                        Minimax_AlphaBeta.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                        Minimax_AlphaBeta.player2Inventory.usePiece(Main.getPieceType(randomMove.shape));
                     } else if (aiAlgorithm.equals("MTDF")) {
-                        MTDf.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                        MTDf.player2Inventory.usePiece(Main.getPieceType(randomMove.shape));
                     } else {
-                        Minimax_History.player2Inventory.usePiece(getPieceType(randomMove.shape));
+                        Minimax_History.player2Inventory.usePiece(Main.getPieceType(randomMove.shape));
                     }
                     System.out.println("Random Player placed a piece:");
                     System.out.println(randomMove);
@@ -106,17 +110,17 @@ public class GameInterface {
                     int x = Integer.parseInt(parts[2]);
                     int y = Integer.parseInt(parts[3]);
 
-                    int[][] shape = getShapeFromType(pieceType);
+                    int[][] shape = Main.getShapeFromType(pieceType);
                     int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
                     Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
 
                     if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
                         if (aiAlgorithm.equals("MINIMAX")) {
-                            Minimax_AlphaBeta.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                            Minimax_AlphaBeta.player2Inventory.usePiece(Main.getPieceType(playerMove.shape));
                         } else if (aiAlgorithm.equals("MTDF")) {
-                            MTDf.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                            MTDf.player2Inventory.usePiece(Main.getPieceType(playerMove.shape));
                         } else {
-                            Minimax_History.player2Inventory.usePiece(getPieceType(playerMove.shape));
+                            Minimax_History.player2Inventory.usePiece(Main.getPieceType(playerMove.shape));
                         }
                         //break; // Exit the loop if the move is valid
                     } else {
@@ -125,16 +129,74 @@ public class GameInterface {
                 //} //no loop for invalid player moves via haskell
                 System.out.println("You placed a piece:");
             }
-            System.out.println(toAsciiString());
+            System.out.println(Main.toAsciiString());
 
 
-            if (checkWin()) {
+            if (Main.checkWin()) {
                 return new GameState(true, false, "player", Main.GAME_BOARD);
             }
         //} //no game loop for playing from haskell
         //scanner.close();
-        return Main.GAME_BOARD;
+        return new GameState(false, false, "NA", Main.GAME_BOARD);
     }
 
+
+public static final class GameState {
+    private final boolean gameOver;
+    private final boolean moveInvalid;
+    private final String winner;
+    private final int[][][] board;
+
+    public GameState(boolean gameOver, boolean moveInvalid, String winner, int[][][] board) {
+        this.gameOver = gameOver;
+        this.moveInvalid = moveInvalid;
+        this.winner = winner;
+        this.board = board;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public boolean isMoveInvalid() {
+        return moveInvalid;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public int[][][] getBoard() {
+        return board;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameState gameState = (GameState) o;
+        return gameOver == gameState.gameOver &&
+               moveInvalid == gameState.moveInvalid &&
+               Objects.equals(winner, gameState.winner) &&
+               Arrays.deepEquals(board, gameState.board);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(gameOver, moveInvalid, winner);
+        result = 31 * result + Arrays.deepHashCode(board);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "GameState[" +
+               "gameOver=" + gameOver +
+               ", moveInvalid=" + moveInvalid +
+               ", winner='" + winner + '\'' +
+               ", board=" + Arrays.deepToString(board) +
+               ']';
+    }
+}
 
 }
