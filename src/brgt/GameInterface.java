@@ -131,6 +131,8 @@ public class GameInterface {
                         //break; // Exit the loop if the move is valid
                     } else {
                         System.out.println("Invalid move. Try again.");
+                        lastMoveWasInvalid = true; //skip AI so we can try again
+                        return GameState.invalidGS();
                     }
                 //} //no loop for invalid player moves via haskell
                 System.out.println("You placed a piece:");
@@ -176,9 +178,31 @@ public static final class GameState {
         return winner;
     }
 
-    public int[][][] getBoard() {
-        return board;
+public Integer[][][] getBoard() {
+    if (board == null) {
+        return null;
     }
+
+    Integer[][][] newBoard = new Integer[board.length][][];
+    for (int i = 0; i < board.length; i++) {
+        if (board[i] == null) {
+            newBoard[i] = null;
+            continue;
+        }
+        newBoard[i] = new Integer[board[i].length][];
+        for (int j = 0; j < board[i].length; j++) {
+            if (board[i][j] == null) {
+                newBoard[i][j] = null;
+                continue;
+            }
+            newBoard[i][j] = new Integer[board[i][j].length];
+            for (int k = 0; k < board[i][j].length; k++) {
+                newBoard[i][j][k] = board[i][j][k]; // Autoboxing from int to Integer
+            }
+        }
+    }
+    return newBoard;
+}
 
     @Override
     public boolean equals(Object o) {
