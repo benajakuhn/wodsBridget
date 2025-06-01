@@ -1,6 +1,8 @@
 package brgt;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class GameInterface {
     //jdk 11, no records (bruh) public record GameState(boolean gameOver, boolean moveInvalid, String winner, int[][][] board){}
@@ -117,7 +119,14 @@ public class GameInterface {
                         lastMoveWasInvalid = true; //skip AI so we can try again
                         return GameState.invalidGS();
                     }
-                    int[][] rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
+                    int[][] rotationMatrix = null;
+                    try{
+                    rotationMatrix = BlockRotator3D.ROTATION_MATRICES[rotationIndex];
+                    }catch(Exception e){
+                        System.out.println("Invalid rotation. Try again.");
+                        lastMoveWasInvalid = true; //skip AI so we can try again
+                        return GameState.invalidGS();
+                    }
                     Move playerMove = new Move(shape, rotationMatrix, x, y, 2);
 
                     if (BlockRotator3D.placeShape(playerMove.getTransformedShape(), playerMove.x, playerMove.y, playerMove.player)) {
@@ -178,7 +187,21 @@ public static final class GameState {
         return winner;
     }
 
-public Integer[][][] getBoard() {
+public int[][][] getBoard() {
+    return board;
+}
+
+public String uglyWorkAroundBoardGet(){
+    //no clue if this always produces valid json
+    return "[[[" +
+        Arrays.stream(board).map(l2 -> Arrays.stream(l2).map(l3 -> Arrays.stream(l3).mapToObj(String::valueOf)
+            .collect(Collectors.joining(",")))
+            .collect(Collectors.joining("],[")))
+            .collect(Collectors.joining("]],[[")) +
+        "]]]";
+}
+
+public Integer[][][] getIntegerBoard() {
     if (board == null) {
         return null;
     }
