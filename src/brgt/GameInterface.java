@@ -192,13 +192,7 @@ public int[][][] getBoard() {
 }
 
 public String uglyWorkAroundBoardGet(){
-    //no clue if this always produces valid json
-    return "[[[" +
-        Arrays.stream(board).map(l2 -> Arrays.stream(l2).map(l3 -> Arrays.stream(l3).mapToObj(String::valueOf)
-            .collect(Collectors.joining(",")))
-            .collect(Collectors.joining("],[")))
-            .collect(Collectors.joining("]],[[")) +
-        "]]]";
+    return Arrays.deepToString(board);
 }
 
 public Integer[][][] getIntegerBoard() {
