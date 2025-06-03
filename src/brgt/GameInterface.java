@@ -3,7 +3,17 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
+/** The Interface used by the haskell scotty web server to bridge between
+*   the game logic and the elm-frontend for bridget-ui
+*
+*   Link to repo: https://github.com/MMMMMNG/bridget-ui
+*  
+*   The class is basically just clue code: 
+*   I copiedd all the code from Main.main() and changed as little as
+*   possible in order to get it working. It is quite hacky, but I didn't want
+*   to waste more time than necessary writing java, because this was
+*   a functional programming project.
+*/
 public class GameInterface {
     //jdk 11, no records (bruh) public record GameState(boolean gameOver, boolean moveInvalid, String winner, int[][][] board){}
     public static boolean lastMoveWasInvalid = false;
